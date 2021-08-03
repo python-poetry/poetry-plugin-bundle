@@ -120,7 +120,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "cleo"
-version = "1.0.0a3"
+version = "1.0.0a4"
 description = "Cleo allows you to create beautiful and testable command-line interfaces."
 category = "main"
 optional = false
@@ -415,7 +415,7 @@ dev = ["pre-commit", "tox"]
 
 [[package]]
 name = "poetry"
-version = "1.2.0a1"
+version = "1.2.0a2"
 description = "Python dependency management and packaging made easy."
 category = "main"
 optional = false
@@ -424,7 +424,7 @@ python-versions = ">=3.6,<4.0"
 [package.dependencies]
 cachecontrol = {version = ">=0.12.4,<0.13.0", extras = ["filecache"]}
 cachy = ">=0.3.0,<0.4.0"
-cleo = ">=1.0.0a1,<2.0.0"
+cleo = ">=1.0.0a4,<2.0.0"
 crashtest = ">=0.3.0,<0.4.0"
 dataclasses = {version = ">=0.8,<0.9", markers = "python_version >= \"3.6\" and python_version < \"3.7\""}
 entrypoints = ">=0.3,<0.4"
@@ -434,7 +434,7 @@ keyring = ">=21.2.0"
 packaging = ">=20.4,<21.0"
 pexpect = ">=4.7.0,<5.0.0"
 pkginfo = ">=1.5,<2.0"
-poetry-core = ">=1.1.0a5,<1.2.0"
+poetry-core = ">=1.1.0a6,<2.0.0"
 requests = ">=2.18,<3.0"
 requests-toolbelt = ">=0.9.1,<0.10.0"
 shellingham = ">=1.1,<2.0"
@@ -443,7 +443,7 @@ virtualenv = ">=20.4.3,<20.4.5"
 
 [[package]]
 name = "poetry-core"
-version = "1.1.0a5"
+version = "1.1.0a6"
 description = "Poetry PEP 517 Build Backend"
 category = "main"
 optional = false
@@ -716,7 +716,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "b50cf69bc4454b283a26ff613f4654c53ea9b89e462c8993a56fab36ac9617ff"
+content-hash = "e46d0fb8162693205bb056c3fd73a8bd49d4320de9d250ca04cec5a9872ea54d"
 
 [metadata.files]
 appdirs = [
@@ -755,6 +755,11 @@ cffi = [
     {file = "cffi-1.14.6-cp27-cp27m-win_amd64.whl", hash = "sha256:7bcac9a2b4fdbed2c16fa5681356d7121ecabf041f18d97ed5b8e0dd38a80224"},
     {file = "cffi-1.14.6-cp27-cp27mu-manylinux1_i686.whl", hash = "sha256:ed38b924ce794e505647f7c331b22a693bee1538fdf46b0222c4717b42f744e7"},
     {file = "cffi-1.14.6-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:e22dcb48709fc51a7b58a927391b23ab37eb3737a98ac4338e2448bef8559b33"},
+    {file = "cffi-1.14.6-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:aedb15f0a5a5949ecb129a82b72b19df97bbbca024081ed2ef88bd5c0a610534"},
+    {file = "cffi-1.14.6-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:48916e459c54c4a70e52745639f1db524542140433599e13911b2f329834276a"},
+    {file = "cffi-1.14.6-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:f627688813d0a4140153ff532537fbe4afea5a3dffce1f9deb7f91f848a832b5"},
+    {file = "cffi-1.14.6-cp35-cp35m-win32.whl", hash = "sha256:f0010c6f9d1a4011e429109fda55a225921e3206e7f62a0c22a35344bfd13cca"},
+    {file = "cffi-1.14.6-cp35-cp35m-win_amd64.whl", hash = "sha256:57e555a9feb4a8460415f1aac331a2dc833b1115284f7ded7278b54afc5bd218"},
     {file = "cffi-1.14.6-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:e8c6a99be100371dbb046880e7a282152aa5d6127ae01783e37662ef73850d8f"},
     {file = "cffi-1.14.6-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:19ca0dbdeda3b2615421d54bef8985f72af6e0c47082a8d26122adac81a95872"},
     {file = "cffi-1.14.6-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:d950695ae4381ecd856bcaf2b1e866720e4ab9a1498cba61c602e56630ca7195"},
@@ -798,8 +803,8 @@ chardet = [
     {file = "chardet-4.0.0.tar.gz", hash = "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa"},
 ]
 cleo = [
-    {file = "cleo-1.0.0a3-py3-none-any.whl", hash = "sha256:46b2f970d06caa311d1e12a1013b0ce2a8149502669ac82cbedafb9e0bfdbccd"},
-    {file = "cleo-1.0.0a3.tar.gz", hash = "sha256:9c1c8dd06635c936f45e4649aa2f7581517b4d52c7a9414d1b42586e63c2fe5d"},
+    {file = "cleo-1.0.0a4-py3-none-any.whl", hash = "sha256:cdd0c3458c15ced3a9f0204b1e53a1b4bee3c56ebcb3ac54c872a56acc657a09"},
+    {file = "cleo-1.0.0a4.tar.gz", hash = "sha256:a103a065d031b7d936ee88a6b93086a69bd9c1b40fa2ebfe8c056285a66b481d"},
 ]
 click = [
     {file = "click-8.0.1-py3-none-any.whl", hash = "sha256:fba402a4a47334742d782209a7c79bc448911afe1149d07bdabdf480b3e2f4b6"},
@@ -942,12 +947,12 @@ pluggy = [
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
 poetry = [
-    {file = "poetry-1.2.0a1-py3-none-any.whl", hash = "sha256:1038d7b10750f707fc953e02e9d648807736f63c0ea9f5e0a089fb7d6419aff9"},
-    {file = "poetry-1.2.0a1.tar.gz", hash = "sha256:ef72ae8017bf866df55d35c5217116264b886c834bb9539fddbdf1d55f132600"},
+    {file = "poetry-1.2.0a2-py3-none-any.whl", hash = "sha256:475fe6884a0a2ec97eee9daca80c37210aee4cd78b6d9ca8e800fad8d3828624"},
+    {file = "poetry-1.2.0a2.tar.gz", hash = "sha256:4bad54dd1b40fd7b7efe90f05288ebab3d55b091cb682c847eac1d24ff1d1e31"},
 ]
 poetry-core = [
-    {file = "poetry-core-1.1.0a5.tar.gz", hash = "sha256:1b886de26026865325eae86a5d12eb154b80c0add8067c106eb706757594d85f"},
-    {file = "poetry_core-1.1.0a5-py3-none-any.whl", hash = "sha256:b347525c1417e9b5c6aee52967eff98c0886853a9e8ab1b9dfb2659913dd37bc"},
+    {file = "poetry-core-1.1.0a6.tar.gz", hash = "sha256:e22c8897216216f6344b3d57167a8cd5485a1403934817d7efaf7fb8f6bcffc9"},
+    {file = "poetry_core-1.1.0a6-py3-none-any.whl", hash = "sha256:4093226d89e1b79f16c917fba766461c01b184d3184d7cad4b7be8426c0cb4be"},
 ]
 pre-commit = [
     {file = "pre_commit-2.13.0-py2.py3-none-any.whl", hash = "sha256:b679d0fddd5b9d6d98783ae5f10fd0c4c59954f375b70a58cbe1ce9bcf9809a4"},

@@ -130,7 +130,7 @@ class VenvBundler(Bundler):
             poetry.pool,
             poetry.config,
         )
-        installer.remove_untracked()
+        installer.requires_synchronization()
         installer.use_executor(poetry.config.get("experimental.new-installer", False))
 
         return_code = installer.run()
