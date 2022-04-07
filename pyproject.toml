@@ -15,13 +15,11 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 poetry = "^1.2.0a2"
 
 [tool.poetry.dev-dependencies]
-black = { version = "^21.4b1", python = "^3.6.2"}
-isort = "^5.8.0"
-pre-commit = { version = "^2.6", python = "^3.6.1" }
+pre-commit = "^2.6"
 pytest = "^6.2.3"
 pytest-mock = "^3.6.1"
 
