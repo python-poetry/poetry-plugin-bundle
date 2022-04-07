@@ -1,9 +1,17 @@
+from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from poetry_bundle_plugin.bundlers.venv_bundler import VenvBundler
 
 
-def test_venv_calls_venv_bundler(app_tester, mocker):
+if TYPE_CHECKING:
+    from cleo.testers.application_tester import ApplicationTester
+    from pytest_mock import MockerFixture
+
+
+def test_venv_calls_venv_bundler(app_tester: ApplicationTester, mocker: MockerFixture):
     mock = mocker.patch(
         "poetry_bundle_plugin.bundlers.venv_bundler.VenvBundler.bundle",
         side_effect=[True, False],
@@ -13,8 +21,8 @@ def test_venv_calls_venv_bundler(app_tester, mocker):
     set_remove = mocker.spy(VenvBundler, "set_remove")
 
     app_tester.application.catch_exceptions(False)
-    assert 0 == app_tester.execute("bundle venv /foo")
-    assert 1 == app_tester.execute("bundle venv /foo --python python3.8 --clear")
+    assert app_tester.execute("bundle venv /foo") == 0
+    assert app_tester.execute("bundle venv /foo --python python3.8 --clear") == 1
 
     assert [
         mocker.call(app_tester.application.poetry, mocker.ANY),

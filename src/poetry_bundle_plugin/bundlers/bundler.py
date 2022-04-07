@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 
@@ -6,9 +8,9 @@ if TYPE_CHECKING:
     from poetry.poetry import Poetry
 
 
-class Bundler(object):
+class Bundler:
 
     name: str
 
-    def bundle(self, poetry: "Poetry", io: "IO") -> None:
+    def bundle(self, poetry: Poetry, io: IO) -> bool:
         raise NotImplementedError()

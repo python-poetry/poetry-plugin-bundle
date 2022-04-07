@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 from poetry_bundle_plugin.bundlers.bundler import Bundler
@@ -15,7 +17,7 @@ def test_bundler_returns_an_instance_of_the_correct_bundler_class():
 
     bundler = manager.bundler("venv")
     assert isinstance(bundler, Bundler)
-    assert "venv" == bundler.name
+    assert bundler.name == "venv"
 
 
 def test_bundler_raises_an_error_for_incorrect_bundler_classes():
@@ -33,7 +35,7 @@ def test_register_bundler_class_registers_new_bundler_classes():
 
     bundler = manager.bundler("mock")
     assert isinstance(bundler, Bundler)
-    assert "mock" == bundler.name
+    assert bundler.name == "mock"
 
 
 def test_register_bundler_class_cannot_register_existing_bundler_classes():
