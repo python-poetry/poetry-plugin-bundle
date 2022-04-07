@@ -16,7 +16,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
-poetry = "^1.2.0a1"
+poetry = "^1.2.0a2"
 
 [tool.poetry.dev-dependencies]
 black = { version = "^21.4b1", python = "^3.6.2"}
