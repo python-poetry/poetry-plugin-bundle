@@ -1,14 +1,16 @@
+from __future__ import annotations
+
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from cleo.helpers import argument
 from cleo.helpers import option
 
-from .bundle_command import BundleCommand
+from poetry_bundle_plugin.console.commands.bundle.bundle_command import BundleCommand
 
 
 if TYPE_CHECKING:
-    from poetry_bundle_plugin.bundlers.venv_bundler import VenvBundler  # noqa
+    from poetry_bundle_plugin.bundlers.venv_bundler import VenvBundler
 
 
 class BundleVenvCommand(BundleCommand):
@@ -39,7 +41,7 @@ class BundleVenvCommand(BundleCommand):
 
     bundler_name = "venv"
 
-    def configure_bundler(self, bundler: "VenvBundler") -> None:
+    def configure_bundler(self, bundler: VenvBundler) -> None:  # type: ignore[override]
         bundler.set_path(Path(self.argument("path")))
         bundler.set_executable(self.option("python"))
         bundler.set_remove(self.option("clear"))

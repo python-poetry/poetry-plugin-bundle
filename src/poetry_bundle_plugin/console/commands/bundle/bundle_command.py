@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
-from typing import Optional
 
 from poetry.console.commands.command import Command
 
@@ -14,21 +15,21 @@ class BundleCommand(Command):
     Base class for all bundle commands.
     """
 
-    bundler_name: Optional[str] = None
+    bundler_name: str
 
     def __init__(self) -> None:
-        self._bundler_manager: Optional["BundlerManager"] = None
+        self._bundler_manager: BundlerManager | None = None
 
         super().__init__()
 
     @property
-    def bundler_manager(self) -> "BundlerManager":
+    def bundler_manager(self) -> BundlerManager | None:
         return self._bundler_manager
 
-    def set_bundler_manager(self, bundler_manager: "BundlerManager") -> None:
+    def set_bundler_manager(self, bundler_manager: BundlerManager) -> None:
         self._bundler_manager = bundler_manager
 
-    def configure_bundler(self, bundler: "Bundler") -> None:
+    def configure_bundler(self, bundler: Bundler) -> None:
         """
         Configure the given bundler based on command specific options and arguments.
         """
@@ -37,6 +38,7 @@ class BundleCommand(Command):
     def handle(self) -> int:
         self.line("")
 
+        assert self._bundler_manager is not None
         bundler = self._bundler_manager.bundler(self.bundler_name)
 
         self.configure_bundler(bundler)

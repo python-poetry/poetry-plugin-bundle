@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import shutil
 import tempfile
 
 from pathlib import Path
+from typing import TYPE_CHECKING
+from typing import Iterator
 
 import pytest
 
@@ -11,20 +15,24 @@ from poetry.utils.env import EnvManager
 from poetry.utils.env import VirtualEnv
 
 
+if TYPE_CHECKING:
+    from pytest_mock import MockerFixture
+
+
 @pytest.fixture
-def config_cache_dir(tmp_dir):
+def config_cache_dir(tmp_dir: str) -> Path:
     path = Path(tmp_dir) / ".cache" / "pypoetry"
     path.mkdir(parents=True)
     return path
 
 
 @pytest.fixture
-def config_virtualenvs_path(config_cache_dir):
+def config_virtualenvs_path(config_cache_dir: Path) -> Path:
     return config_cache_dir / "virtualenvs"
 
 
 @pytest.fixture
-def config_source(config_cache_dir):
+def config_source(config_cache_dir: Path) -> DictConfigSource:
     source = DictConfigSource()
     source.add_property("cache-dir", str(config_cache_dir))
 
@@ -32,14 +40,18 @@ def config_source(config_cache_dir):
 
 
 @pytest.fixture
-def auth_config_source():
+def auth_config_source() -> DictConfigSource:
     source = DictConfigSource()
 
     return source
 
 
 @pytest.fixture
-def config(config_source, auth_config_source, mocker):
+def config(
+    config_source: DictConfigSource,
+    auth_config_source: DictConfigSource,
+    mocker: MockerFixture,
+) -> Config:
     import keyring
 
     from keyring.backends.fail import Keyring
@@ -58,7 +70,7 @@ def config(config_source, auth_config_source, mocker):
 
 
 @pytest.fixture
-def tmp_dir():
+def tmp_dir() -> Iterator[str]:
     dir_ = tempfile.mkdtemp(prefix="poetry_bundle_plugin_")
 
     yield dir_
@@ -67,7 +79,7 @@ def tmp_dir():
 
 
 @pytest.fixture
-def tmp_venv(tmp_dir):
+def tmp_venv(tmp_dir: str) -> Iterator[VirtualEnv]:
     venv_path = Path(tmp_dir) / "venv"
 
     EnvManager.build_venv(str(venv_path))
