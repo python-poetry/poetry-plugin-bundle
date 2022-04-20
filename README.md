@@ -1,28 +1,26 @@
-# Poetry bundle plugin
+# Poetry Plugin: Bundle
 
 This package is a plugin that allows the bundling of Poetry projects into various formats.
-
 
 ## Installation
 
 The easiest way to install the `bundle` plugin is via the `plugin add` command of Poetry.
 
 ```bash
-poetry plugin add poetry-bundle-plugin
+poetry plugin add poetry-plugin-bundle
 ```
 
 If you used `pipx` to install Poetry you can add the plugin via the `pipx inject` command.
 
 ```bash
-pipx inject poetry poetry-bundle-plugin
+pipx inject poetry poetry-plugin-bundle
 ```
 
 Otherwise, if you used `pip` to install Poetry you can add the plugin packages via the `pip install` command.
 
 ```bash
-pip install poetry-bundle-plugin
+pip install poetry-plugin-bundle
 ```
-
 
 ## Usage
 

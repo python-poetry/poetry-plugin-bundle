@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 def load_command(name: str) -> Callable:
     def _load() -> type[Command]:
         module = import_module(
-            f"poetry_bundle_plugin.console.commands.{'.'.join(name.split(' '))}"
+            f"poetry_plugin_bundle.console.commands.{'.'.join(name.split(' '))}"
         )
         command_class = getattr(
             module, f"{''.join(c.title() for c in name.split(' '))}Command"
@@ -45,7 +45,7 @@ class BundleApplicationPlugin(ApplicationPlugin):
     def configure_bundle_commands(
         self, event: ConsoleCommandEvent, event_name: str, _: Any
     ) -> None:
-        from poetry_bundle_plugin.console.commands.bundle.bundle_command import (
+        from poetry_plugin_bundle.console.commands.bundle.bundle_command import (
             BundleCommand,
         )
 
@@ -57,6 +57,6 @@ class BundleApplicationPlugin(ApplicationPlugin):
         if command.bundler_manager is not None:
             return
 
-        from poetry_bundle_plugin.bundlers.bundler_manager import BundlerManager
+        from poetry_plugin_bundle.bundlers.bundler_manager import BundlerManager
 
         command.set_bundler_manager(BundlerManager())

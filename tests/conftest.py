@@ -71,7 +71,7 @@ def config(
 
 @pytest.fixture
 def tmp_dir() -> Iterator[str]:
-    dir_ = tempfile.mkdtemp(prefix="poetry_bundle_plugin_")
+    dir_ = tempfile.mkdtemp(prefix="poetry_plugin_bundle_")
 
     yield dir_
 

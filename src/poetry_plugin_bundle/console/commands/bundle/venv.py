@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 from cleo.helpers import argument
 from cleo.helpers import option
 
-from poetry_bundle_plugin.console.commands.bundle.bundle_command import BundleCommand
+from poetry_plugin_bundle.console.commands.bundle.bundle_command import BundleCommand
 
 
 if TYPE_CHECKING:
-    from poetry_bundle_plugin.bundlers.venv_bundler import VenvBundler
+    from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
 
 class BundleVenvCommand(BundleCommand):

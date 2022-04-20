@@ -6,8 +6,8 @@ from poetry.console.commands.command import Command
 
 
 if TYPE_CHECKING:
-    from poetry_bundle_plugin.bundlers.bundler import Bundler
-    from poetry_bundle_plugin.bundlers.bundler_manager import BundlerManager
+    from poetry_plugin_bundle.bundlers.bundler import Bundler
+    from poetry_plugin_bundle.bundlers.bundler_manager import BundlerManager
 
 
 class BundleCommand(Command):

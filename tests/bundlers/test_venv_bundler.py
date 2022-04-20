@@ -15,7 +15,7 @@ from poetry.factory import Factory
 from poetry.repositories.pool import Pool
 from poetry.repositories.repository import Repository
 
-from poetry_bundle_plugin.bundlers.venv_bundler import VenvBundler
+from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
 
 if TYPE_CHECKING:

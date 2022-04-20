@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from poetry_bundle_plugin.bundlers.venv_bundler import VenvBundler
+from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
 
 if TYPE_CHECKING:
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 def test_venv_calls_venv_bundler(app_tester: ApplicationTester, mocker: MockerFixture):
     mock = mocker.patch(
-        "poetry_bundle_plugin.bundlers.venv_bundler.VenvBundler.bundle",
+        "poetry_plugin_bundle.bundlers.venv_bundler.VenvBundler.bundle",
         side_effect=[True, False],
     )
     set_path = mocker.spy(VenvBundler, "set_path")

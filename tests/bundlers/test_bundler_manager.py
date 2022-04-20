@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from poetry_bundle_plugin.bundlers.bundler import Bundler
-from poetry_bundle_plugin.bundlers.bundler_manager import BundlerManager
-from poetry_bundle_plugin.exceptions import BundlerManagerError
+from poetry_plugin_bundle.bundlers.bundler import Bundler
+from poetry_plugin_bundle.bundlers.bundler_manager import BundlerManager
+from poetry_plugin_bundle.exceptions import BundlerManagerError
 
 
 class MockBundler(Bundler):
