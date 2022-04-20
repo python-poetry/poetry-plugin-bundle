@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "poetry-bundle-plugin"
+name = "poetry-plugin-bundle"
 version = "0.1.0"
 description = "Poetry plugin to bundle projects into various formats"
 authors = ["Sébastien Eustace <sebastien@eustace.io>"]
@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 
 packages = [
-    { include = "poetry_bundle_plugin", from = "src" }
+    { include = "poetry_plugin_bundle", from = "src" }
 ]
 
 include = [
@@ -24,7 +24,7 @@ pytest = "^6.2.3"
 pytest-mock = "^3.6.1"
 
 [tool.poetry.plugins."poetry.application.plugin"]
-export = "poetry_bundle_plugin.plugin:BundleApplicationPlugin"
+export = "poetry_plugin_bundle.plugin:BundleApplicationPlugin"
 
 [tool.black]
 target-version = ['py37']

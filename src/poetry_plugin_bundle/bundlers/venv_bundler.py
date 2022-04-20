@@ -7,7 +7,7 @@ from subprocess import CalledProcessError
 from typing import TYPE_CHECKING
 from typing import cast
 
-from poetry_bundle_plugin.bundlers.bundler import Bundler
+from poetry_plugin_bundle.bundlers.bundler import Bundler
 
 
 if TYPE_CHECKING:

@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from poetry_bundle_plugin.exceptions import BundlerManagerError
+from poetry_plugin_bundle.exceptions import BundlerManagerError
 
 
 if TYPE_CHECKING:
-    from poetry_bundle_plugin.bundlers.bundler import Bundler
+    from poetry_plugin_bundle.bundlers.bundler import Bundler
 
 
 class BundlerManager:
     def __init__(self) -> None:
-        from poetry_bundle_plugin.bundlers.venv_bundler import VenvBundler
+        from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
         self._bundler_classes: dict[str, type[Bundler]] = {}
 
