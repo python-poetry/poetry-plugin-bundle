@@ -1,46 +1,31 @@
 from __future__ import annotations
 
-from importlib import import_module
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Callable
 from typing import cast
 
 from cleo.events.console_events import COMMAND
-from poetry.console.commands.command import Command
 from poetry.plugins.application_plugin import ApplicationPlugin
+
+from poetry_plugin_bundle.console.commands.bundle.venv import BundleVenvCommand
 
 
 if TYPE_CHECKING:
     from cleo.events.console_command_event import ConsoleCommandEvent
     from poetry.console.application import Application
-
-
-def load_command(name: str) -> Callable:
-    def _load() -> type[Command]:
-        module = import_module(
-            f"poetry_plugin_bundle.console.commands.{'.'.join(name.split(' '))}"
-        )
-        command_class = getattr(
-            module, f"{''.join(c.title() for c in name.split(' '))}Command"
-        )
-
-        return command_class()
-
-    return _load
-
-
-COMMANDS = ["bundle venv"]
+    from poetry.console.commands.command import Command
 
 
 class BundleApplicationPlugin(ApplicationPlugin):
+    @property
+    def commands(self) -> list[type[Command]]:
+        return [BundleVenvCommand]
+
     def activate(self, application: Application) -> None:
         application.event_dispatcher.add_listener(
             COMMAND, self.configure_bundle_commands
         )
-
-        for command in COMMANDS:
-            application.command_loader.register_factory(command, load_command(command))
+        super().activate(application=application)
 
     def configure_bundle_commands(
         self, event: ConsoleCommandEvent, event_name: str, _: Any

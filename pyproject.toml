@@ -16,9 +16,10 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-poetry = "^1.2.0a2"
+poetry = "^1.2.0b1dev0"
 
 [tool.poetry.dev-dependencies]
+poetry = {git = "https://github.com/python-poetry/poetry.git"}
 pre-commit = "^2.6"
 pytest = "^6.2.3"
 pytest-mock = "^3.6.1"
