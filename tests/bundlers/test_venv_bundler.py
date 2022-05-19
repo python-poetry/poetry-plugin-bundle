@@ -52,68 +52,68 @@ def poetry(config: Config) -> Poetry:
 
 
 def test_bundler_should_build_a_new_venv_with_existing_python(
-    io: BufferedIO, tmp_dir: str, poetry: Poetry, mocker: MockerFixture
+    io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture
 ):
-    shutil.rmtree(tmp_dir)
+    shutil.rmtree(tmpdir)
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
 
     bundler = VenvBundler()
-    bundler.set_path(Path(tmp_dir))
+    bundler.set_path(Path(tmpdir))
 
     assert bundler.bundle(poetry, io)
 
     python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
-  • Bundling simple-project (1.2.3) into {tmp_dir}
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Creating a virtual environment using Python {python_version}
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Installing dependencies
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Installing simple-project (1.2.3)
-  • Bundled simple-project (1.2.3) into {tmp_dir}
+  • Bundling simple-project (1.2.3) into {tmpdir}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
+  • Bundling simple-project (1.2.3) into {tmpdir}: Installing simple-project (1.2.3)
+  • Bundled simple-project (1.2.3) into {tmpdir}
 """  # noqa: E501
     assert expected == io.fetch_output()
 
 
 def test_bundler_should_build_a_new_venv_with_given_executable(
-    io: BufferedIO, tmp_dir: str, poetry: Poetry, mocker: MockerFixture
+    io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture
 ):
-    shutil.rmtree(tmp_dir)
+    shutil.rmtree(tmpdir)
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
 
     bundler = VenvBundler()
-    bundler.set_path(Path(tmp_dir))
+    bundler.set_path(Path(tmpdir))
     bundler.set_executable(sys.executable)
 
     assert bundler.bundle(poetry, io)
 
     python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
-  • Bundling simple-project (1.2.3) into {tmp_dir}
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Creating a virtual environment using Python {python_version}
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Installing dependencies
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Installing simple-project (1.2.3)
-  • Bundled simple-project (1.2.3) into {tmp_dir}
+  • Bundling simple-project (1.2.3) into {tmpdir}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
+  • Bundling simple-project (1.2.3) into {tmpdir}: Installing simple-project (1.2.3)
+  • Bundled simple-project (1.2.3) into {tmpdir}
 """  # noqa: E501
     assert expected == io.fetch_output()
 
 
 def test_bundler_should_build_a_new_venv_if_existing_venv_is_incompatible(
-    io: BufferedIO, tmp_dir: str, poetry: Poetry, mocker: MockerFixture
+    io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture
 ):
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
 
     bundler = VenvBundler()
-    bundler.set_path(Path(tmp_dir))
+    bundler.set_path(Path(tmpdir))
 
     assert bundler.bundle(poetry, io)
 
     python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
-  • Bundling simple-project (1.2.3) into {tmp_dir}
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Removing existing virtual environment
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Creating a virtual environment using Python {python_version}
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Installing dependencies
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Installing simple-project (1.2.3)
-  • Bundled simple-project (1.2.3) into {tmp_dir}
+  • Bundling simple-project (1.2.3) into {tmpdir}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Removing existing virtual environment
+  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
+  • Bundling simple-project (1.2.3) into {tmpdir}: Installing simple-project (1.2.3)
+  • Bundled simple-project (1.2.3) into {tmpdir}
 """  # noqa: E501
     assert expected == io.fetch_output()
 
@@ -164,7 +164,7 @@ def test_bundler_should_remove_an_existing_venv_if_forced(
 
 
 def test_bundler_should_fail_when_installation_fails(
-    io: BufferedIO, tmp_dir: str, poetry: Poetry, mocker: MockerFixture
+    io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture
 ):
     mocker.patch(
         "poetry.installation.executor.Executor._do_execute_operation",
@@ -172,17 +172,17 @@ def test_bundler_should_fail_when_installation_fails(
     )
 
     bundler = VenvBundler()
-    bundler.set_path(Path(tmp_dir))
+    bundler.set_path(Path(tmpdir))
 
     assert not bundler.bundle(poetry, io)
 
     python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
-  • Bundling simple-project (1.2.3) into {tmp_dir}
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Removing existing virtual environment
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Creating a virtual environment using Python {python_version}
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Installing dependencies
-  • Bundling simple-project (1.2.3) into {tmp_dir}: Failed at step Installing dependencies
+  • Bundling simple-project (1.2.3) into {tmpdir}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Removing existing virtual environment
+  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
+  • Bundling simple-project (1.2.3) into {tmpdir}: Failed at step Installing dependencies
 """  # noqa: E501
     assert expected == io.fetch_output()
 
