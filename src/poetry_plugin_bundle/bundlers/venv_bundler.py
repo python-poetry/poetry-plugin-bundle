@@ -44,6 +44,7 @@ class VenvBundler(Bundler):
 
     def bundle(self, poetry: Poetry, io: IO) -> bool:
         from pathlib import Path
+        from tempfile import TemporaryDirectory
 
         from cleo.io.null_io import NullIO
         from poetry.core.masonry.builders.wheel import WheelBuilder
@@ -55,7 +56,6 @@ class VenvBundler(Bundler):
         from poetry.utils.env import EnvManager
         from poetry.utils.env import SystemEnv
         from poetry.utils.env import VirtualEnv
-        from poetry.utils.helpers import temporary_directory
 
         warnings = []
 
@@ -145,7 +145,7 @@ class VenvBundler(Bundler):
 
         # Build a wheel of the project in a temporary directory
         # and install it in the newly create virtual environment
-        with temporary_directory() as directory:
+        with TemporaryDirectory() as directory:
             try:
                 wheel_name = WheelBuilder.make_in(poetry, directory=Path(directory))
                 wheel = Path(directory).joinpath(wheel_name)

@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import shutil
-import tempfile
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Iterator
 
@@ -16,12 +14,14 @@ from poetry.utils.env import VirtualEnv
 
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from pytest_mock import MockerFixture
 
 
 @pytest.fixture
-def config_cache_dir(tmp_dir: str) -> Path:
-    path = Path(tmp_dir) / ".cache" / "pypoetry"
+def config_cache_dir(tmp_path: Path) -> Path:
+    path = tmp_path / ".cache" / "pypoetry"
     path.mkdir(parents=True)
     return path
 
@@ -70,17 +70,8 @@ def config(
 
 
 @pytest.fixture
-def tmp_dir() -> Iterator[str]:
-    dir_ = tempfile.mkdtemp(prefix="poetry_plugin_bundle_")
-
-    yield dir_
-
-    shutil.rmtree(dir_)
-
-
-@pytest.fixture
-def tmp_venv(tmp_dir: str) -> Iterator[VirtualEnv]:
-    venv_path = Path(tmp_dir) / "venv"
+def tmp_venv(tmp_path: Path) -> Iterator[VirtualEnv]:
+    venv_path = tmp_path / "venv"
 
     EnvManager.build_venv(str(venv_path))
 
