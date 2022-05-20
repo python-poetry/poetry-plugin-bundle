@@ -153,7 +153,7 @@ class VenvBundler(Bundler):
                     poetry.package.name,
                     poetry.package.version,
                     source_type="file",
-                    source_url=wheel,
+                    source_url=str(wheel),
                 )
                 installer.executor.execute([Install(package)])
             except ModuleOrPackageNotFound:
@@ -216,7 +216,7 @@ class VenvBundler(Bundler):
             pass
 
         try:
-            python_version = subprocess.check_output(
+            python_version_str = subprocess.check_output(
                 list_to_shell_command(
                     [
                         executable,
@@ -232,6 +232,6 @@ class VenvBundler(Bundler):
 
             raise EnvCommandError(e)
 
-        python_version = Version.parse(python_version.strip())
+        python_version = Version.parse(python_version_str.strip())
 
         return executable, python_version

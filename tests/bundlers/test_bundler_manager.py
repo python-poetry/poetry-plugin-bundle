@@ -12,7 +12,7 @@ class MockBundler(Bundler):
     name = "mock"
 
 
-def test_bundler_returns_an_instance_of_the_correct_bundler_class():
+def test_bundler_returns_an_instance_of_the_correct_bundler_class() -> None:
     manager = BundlerManager()
 
     bundler = manager.bundler("venv")
@@ -20,7 +20,7 @@ def test_bundler_returns_an_instance_of_the_correct_bundler_class():
     assert bundler.name == "venv"
 
 
-def test_bundler_raises_an_error_for_incorrect_bundler_classes():
+def test_bundler_raises_an_error_for_incorrect_bundler_classes() -> None:
     manager = BundlerManager()
 
     with pytest.raises(
@@ -29,7 +29,7 @@ def test_bundler_raises_an_error_for_incorrect_bundler_classes():
         manager.bundler("mock")
 
 
-def test_register_bundler_class_registers_new_bundler_classes():
+def test_register_bundler_class_registers_new_bundler_classes() -> None:
     manager = BundlerManager()
     manager.register_bundler_class(MockBundler)
 
@@ -38,7 +38,7 @@ def test_register_bundler_class_registers_new_bundler_classes():
     assert bundler.name == "mock"
 
 
-def test_register_bundler_class_cannot_register_existing_bundler_classes():
+def test_register_bundler_class_cannot_register_existing_bundler_classes() -> None:
     manager = BundlerManager()
     manager.register_bundler_class(MockBundler)
 

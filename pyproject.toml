@@ -41,14 +41,11 @@ lines_between_types = 1
 lines_after_imports = 2
 
 [tool.mypy]
-check_untyped_defs = true
 ignore_missing_imports = true
 show_error_codes = true
-warn_redundant_casts = true
-warn_unused_configs = true
-warn_unused_ignores = true
+strict = true
 enable_error_code = ["ignore-without-code"]
-files = "src"
+files = ["src", "tests"]
 
 [build-system]
 requires = ["poetry-core"]

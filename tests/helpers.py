@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from typing import Any
 
 from poetry.console.application import Application
 from poetry.core.toml.file import TOMLFile
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from poetry.poetry import Poetry
+    from tomlkit.toml_document import TOMLDocument
 
 
 class TestApplication(Application):
@@ -21,7 +23,8 @@ class TestApplication(Application):
 
     def reset_poetry(self) -> None:
         poetry = self._poetry
-        self._poetry = Factory().create_poetry(self._poetry.file.path.parent)
+        assert poetry is not None
+        self._poetry = Factory().create_poetry(poetry.file.path.parent)
         self._poetry.set_pool(poetry.pool)
         self._poetry.set_config(poetry.config)
         self._poetry.set_locker(
@@ -30,13 +33,12 @@ class TestApplication(Application):
 
 
 class TestLocker(Locker):
-    def __init__(self, lock: str | Path, local_config: dict) -> None:
+    def __init__(self, lock: str | Path, local_config: dict[str, Any]) -> None:
         self._lock = TOMLFile(lock)
         self._local_config = local_config
-        self._lock_data: dict | None = None
+        self._lock_data: TOMLDocument | None = None
         self._content_hash = self._get_content_hash()
         self._locked = False
-        self._lock_data = None
         self._write = False
 
     def write(self, write: bool = True) -> None:
@@ -50,7 +52,7 @@ class TestLocker(Locker):
 
         return self
 
-    def mock_lock_data(self, data: dict) -> None:
+    def mock_lock_data(self, data: TOMLDocument) -> None:
         self.locked()
 
         self._lock_data = data
@@ -58,7 +60,7 @@ class TestLocker(Locker):
     def is_fresh(self) -> bool:
         return True
 
-    def _write_lock_data(self, data: dict) -> None:
+    def _write_lock_data(self, data: TOMLDocument) -> None:
         if self._write:
             super()._write_lock_data(data)
             self._locked = True
