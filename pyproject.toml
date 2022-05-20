@@ -23,6 +23,7 @@ poetry = {git = "https://github.com/python-poetry/poetry.git"}
 pre-commit = "^2.6"
 pytest = "^6.2.3"
 pytest-mock = "^3.6.1"
+mypy = ">=0.950"
 
 [tool.poetry.plugins."poetry.application.plugin"]
 export = "poetry_plugin_bundle.plugin:BundleApplicationPlugin"
