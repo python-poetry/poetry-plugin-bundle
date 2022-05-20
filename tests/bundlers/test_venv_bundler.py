@@ -53,7 +53,7 @@ def poetry(config: Config) -> Poetry:
 
 def test_bundler_should_build_a_new_venv_with_existing_python(
     io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture
-):
+) -> None:
     shutil.rmtree(tmpdir)
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
 
@@ -75,7 +75,7 @@ def test_bundler_should_build_a_new_venv_with_existing_python(
 
 def test_bundler_should_build_a_new_venv_with_given_executable(
     io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture
-):
+) -> None:
     shutil.rmtree(tmpdir)
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
 
@@ -98,7 +98,7 @@ def test_bundler_should_build_a_new_venv_with_given_executable(
 
 def test_bundler_should_build_a_new_venv_if_existing_venv_is_incompatible(
     io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture
-):
+) -> None:
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
 
     bundler = VenvBundler()
@@ -120,7 +120,7 @@ def test_bundler_should_build_a_new_venv_if_existing_venv_is_incompatible(
 
 def test_bundler_should_use_an_existing_venv_if_compatible(
     io: BufferedIO, tmp_venv: VirtualEnv, poetry: Poetry, mocker: MockerFixture
-):
+) -> None:
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
 
     bundler = VenvBundler()
@@ -141,7 +141,7 @@ def test_bundler_should_use_an_existing_venv_if_compatible(
 
 def test_bundler_should_remove_an_existing_venv_if_forced(
     io: BufferedIO, tmp_venv: VirtualEnv, poetry: Poetry, mocker: MockerFixture
-):
+) -> None:
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
 
     bundler = VenvBundler()
@@ -165,7 +165,7 @@ def test_bundler_should_remove_an_existing_venv_if_forced(
 
 def test_bundler_should_fail_when_installation_fails(
     io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture
-):
+) -> None:
     mocker.patch(
         "poetry.installation.executor.Executor._do_execute_operation",
         side_effect=Exception(),
@@ -189,7 +189,7 @@ def test_bundler_should_fail_when_installation_fails(
 
 def test_bundler_should_display_a_warning_for_projects_with_no_module(
     io: BufferedIO, tmp_venv: VirtualEnv, mocker: MockerFixture, config: Config
-):
+) -> None:
     poetry = Factory().create_poetry(
         Path(__file__).parent.parent / "fixtures" / "simple_project_with_no_module"
     )

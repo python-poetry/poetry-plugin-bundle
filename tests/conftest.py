@@ -56,7 +56,7 @@ def config(
 
     from keyring.backends.fail import Keyring
 
-    keyring.set_keyring(Keyring())
+    keyring.set_keyring(Keyring())  # type: ignore[no-untyped-call]
 
     c = Config()
     c.merge(config_source.config)

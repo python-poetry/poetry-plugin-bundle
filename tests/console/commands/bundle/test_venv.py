@@ -11,7 +11,9 @@ if TYPE_CHECKING:
     from pytest_mock import MockerFixture
 
 
-def test_venv_calls_venv_bundler(app_tester: ApplicationTester, mocker: MockerFixture):
+def test_venv_calls_venv_bundler(
+    app_tester: ApplicationTester, mocker: MockerFixture
+) -> None:
     mock = mocker.patch(
         "poetry_plugin_bundle.bundlers.venv_bundler.VenvBundler.bundle",
         side_effect=[True, False],
