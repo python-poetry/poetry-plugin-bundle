@@ -43,7 +43,7 @@ def poetry(config: Config) -> Poetry:
     poetry.set_config(config)
 
     pool = Pool()
-    repository = Repository()
+    repository = Repository("repo")
     repository.add_package(Package("foo", "1.0.0"))
     pool.add_repository(repository)
     poetry.set_pool(pool)
@@ -196,7 +196,7 @@ def test_bundler_should_display_a_warning_for_projects_with_no_module(
     poetry.set_config(config)
 
     pool = Pool()
-    repository = Repository()
+    repository = Repository("repo")
     repository.add_package(Package("foo", "1.0.0"))
     pool.add_repository(repository)
     poetry.set_pool(pool)
