@@ -9,7 +9,6 @@ if TYPE_CHECKING:
 
 
 class Bundler:
-
     name: str
 
     def bundle(self, poetry: Poetry, io: IO) -> bool:
