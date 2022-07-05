@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 
 
 class VenvBundler(Bundler):
-
     name = "venv"
 
     def __init__(self) -> None:

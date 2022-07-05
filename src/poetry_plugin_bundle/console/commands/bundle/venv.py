@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
 
 class BundleVenvCommand(BundleCommand):
-
     name = "bundle venv"
     description = "Bundle the current project into a virtual environment"
 

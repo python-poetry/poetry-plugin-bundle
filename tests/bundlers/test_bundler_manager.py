@@ -8,7 +8,6 @@ from poetry_plugin_bundle.exceptions import BundlerManagerError
 
 
 class MockBundler(Bundler):
-
     name = "mock"
 
 
