@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "poetry-plugin-bundle"
-version = "0.1.0"
+version = "1.0.0"
 description = "Poetry plugin to bundle projects into various formats"
 authors = ["Sébastien Eustace <sebastien@eustace.io>"]
 license = "MIT"
@@ -16,12 +16,11 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-poetry = "^1.2.0b1dev0"
+poetry = "^1.2.0b2"
 
 [tool.poetry.dev-dependencies]
-poetry = {git = "https://github.com/python-poetry/poetry.git"}
 pre-commit = "^2.6"
-pytest = "^6.2.3"
+pytest = "^7.1.2"
 pytest-mock = "^3.6.1"
 mypy = ">=0.950"
 
@@ -41,11 +40,23 @@ lines_between_types = 1
 lines_after_imports = 2
 
 [tool.mypy]
-ignore_missing_imports = true
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+explicit_package_bases = true
+files = ["src", "tests"]
+mypy_path = "src"
+namespace_packages = true
 show_error_codes = true
 strict = true
-enable_error_code = ["ignore-without-code"]
-files = ["src", "tests"]
+
+[[tool.mypy.overrides]]
+module = [
+  'cleo.*',
+]
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core"]

@@ -20,7 +20,7 @@ from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
 if TYPE_CHECKING:
     from poetry.config.config import Config
-    from poetry.poetry.poetry import Poetry
+    from poetry.poetry import Poetry
     from poetry.utils.env import VirtualEnv
     from pytest_mock import MockerFixture
 
