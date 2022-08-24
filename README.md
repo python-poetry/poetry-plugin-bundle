@@ -4,10 +4,10 @@ This package is a plugin that allows the bundling of Poetry projects into variou
 
 ## Installation
 
-The easiest way to install the `bundle` plugin is via the `plugin add` command of Poetry.
+The easiest way to install the `bundle` plugin is via the `self add` command of Poetry.
 
 ```bash
-poetry plugin add poetry-plugin-bundle
+poetry self add poetry-plugin-bundle
 ```
 
 If you used `pipx` to install Poetry you can add the plugin via the `pipx inject` command.
