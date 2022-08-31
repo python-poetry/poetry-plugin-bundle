@@ -252,7 +252,7 @@ def test_bundler_can_filter_dependency_groups(
     with pytest.raises(SolverProblemError):
         assert not bundler.bundle(poetry, io)
 
-    bundler.set_activated_groups(set(["main"]))
+    bundler.set_activated_groups({"main"})
     io.clear_output()
 
     # This succeeds because the dev dependency group is filtered out
