@@ -18,10 +18,11 @@ class BundleVenvCommand(BundleCommand):
     description = "Bundle the current project into a virtual environment"
 
     arguments = [
-        argument("path", "The path to the virtual environment to bundle into."),
+        argument("path", "The path to the virtual environment to bundle into.")
     ]
 
     options = [
+        *BundleCommand._group_dependency_options(),
         option(
             "python",
             "p",
@@ -44,3 +45,4 @@ class BundleVenvCommand(BundleCommand):
         bundler.set_path(Path(self.argument("path")))
         bundler.set_executable(self.option("python"))
         bundler.set_remove(self.option("clear"))
+        bundler.set_activated_groups(self.activated_groups)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from poetry.console.commands.command import Command
+from poetry.console.commands.group_command import GroupCommand
 
 
 if TYPE_CHECKING:
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from poetry_plugin_bundle.bundlers.bundler_manager import BundlerManager
 
 
-class BundleCommand(Command):
+class BundleCommand(GroupCommand):
     """
     Base class for all bundle commands.
     """

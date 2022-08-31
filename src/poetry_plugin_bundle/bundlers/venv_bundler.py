@@ -25,6 +25,7 @@ class VenvBundler(Bundler):
         self._path: Path
         self._executable: str | None = None
         self._remove: bool = False
+        self._activated_groups: set[str] | None = None
 
     def set_path(self, path: Path) -> VenvBundler:
         self._path = path
@@ -33,6 +34,11 @@ class VenvBundler(Bundler):
 
     def set_executable(self, executable: str) -> VenvBundler:
         self._executable = executable
+
+        return self
+
+    def set_activated_groups(self, activated_groups: set[str]) -> VenvBundler:
+        self._activated_groups = activated_groups
 
         return self
 
@@ -111,10 +117,7 @@ class VenvBundler(Bundler):
 
         env = VirtualEnv(self._path)
 
-        self._write(
-            io,
-            f"{message}: <info>Installing dependencies</info>",
-        )
+        self._write(io, f"{message}: <info>Installing dependencies</info>")
 
         installer = Installer(
             NullIO() if not io.is_debug() else io,
@@ -124,6 +127,8 @@ class VenvBundler(Bundler):
             poetry.pool,
             poetry.config,
         )
+        if self._activated_groups is not None:
+            installer.only_groups(self._activated_groups)
         installer.requires_synchronization()
         installer.use_executor(poetry.config.get("experimental.new-installer", False))
 

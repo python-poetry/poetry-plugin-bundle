@@ -221,3 +221,51 @@ def test_bundler_should_display_a_warning_for_projects_with_no_module(
   • The root package was not installed because no matching module or package was found.
 """  # noqa: E501
     assert expected == io.fetch_output()
+
+
+def test_bundler_can_filter_dependency_groups(
+    io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture, config: Config
+) -> None:
+    poetry = Factory().create_poetry(
+        Path(__file__).parent.parent / "fixtures" / "simple_project_with_dev_dep"
+    )
+    poetry.set_config(config)
+
+    # foo is in the main dependency group
+    # bar is a dev dependency
+    # add a repository for foo but not bar
+    pool = Pool()
+    repository = Repository("repo")
+    repository.add_package(Package("foo", "1.0.0"))
+    pool.add_repository(repository)
+    poetry.set_pool(pool)
+
+    mocker.patch("poetry.installation.executor.Executor._execute_operation")
+
+    bundler = VenvBundler()
+    bundler.set_path(Path(tmpdir))
+    bundler.set_remove(True)
+
+    # This should fail because there is not repo for bar
+    from poetry.puzzle.exceptions import SolverProblemError
+
+    with pytest.raises(SolverProblemError):
+        assert not bundler.bundle(poetry, io)
+
+    bundler.set_activated_groups(set(["main"]))
+    io.clear_output()
+
+    # This succeeds because the dev dependency group is filtered out
+    assert bundler.bundle(poetry, io)
+
+    path = tmpdir
+    python_version = ".".join(str(v) for v in sys.version_info[:3])
+    expected = f"""\
+  • Bundling simple-project (1.2.3) into {path}
+  • Bundling simple-project (1.2.3) into {path}: Removing existing virtual environment
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {path}: Installing dependencies
+  • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
+  • Bundled simple-project (1.2.3) into {path}
+"""  # noqa: E501
+    assert expected == io.fetch_output()
