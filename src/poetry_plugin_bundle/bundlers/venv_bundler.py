@@ -220,8 +220,10 @@ class VenvBundler(Bundler):
                     [
                         executable,
                         "-c",
-                        "\"import sys; print('.'.join([str(s) for s in"
-                        ' sys.version_info[:3]]))"',
+                        (
+                            "\"import sys; print('.'.join([str(s) for s in"
+                            ' sys.version_info[:3]]))"'
+                        ),
                     ]
                 ),
                 shell=True,
