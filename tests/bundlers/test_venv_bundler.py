@@ -12,6 +12,7 @@ from cleo.formatters.style import Style
 from cleo.io.buffered_io import BufferedIO
 from poetry.core.packages.package import Package
 from poetry.factory import Factory
+from poetry.puzzle.exceptions import SolverProblemError
 from poetry.repositories.pool import Pool
 from poetry.repositories.repository import Repository
 
@@ -247,8 +248,6 @@ def test_bundler_can_filter_dependency_groups(
     bundler.set_remove(True)
 
     # This should fail because there is not repo for bar
-    from poetry.puzzle.exceptions import SolverProblemError
-
     with pytest.raises(SolverProblemError):
         assert not bundler.bundle(poetry, io)
 
