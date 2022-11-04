@@ -16,7 +16,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-poetry = "^1.2.0rc1"
+poetry = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.6"
