@@ -26,8 +26,10 @@ class BundleVenvCommand(BundleCommand):
         option(
             "python",
             "p",
-            "The Python executable to use to create the virtual environment. "
-            "Defaults to the current Python executable",
+            (
+                "The Python executable to use to create the virtual environment. "
+                "Defaults to the current Python executable"
+            ),
             flag=False,
             value_required=True,
         ),
