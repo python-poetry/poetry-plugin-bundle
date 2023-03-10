@@ -22,8 +22,9 @@ class BundleApplicationPlugin(ApplicationPlugin):
         return [BundleVenvCommand]
 
     def activate(self, application: Application) -> None:
+        assert application.event_dispatcher
         application.event_dispatcher.add_listener(
-            COMMAND, self.configure_bundle_commands
+            COMMAND, self.configure_bundle_commands  # type: ignore[arg-type]
         )
         super().activate(application=application)
 

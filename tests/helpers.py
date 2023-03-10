@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 from typing import Any
 
 from poetry.console.application import Application
-from poetry.core.toml.file import TOMLFile
 from poetry.factory import Factory
 from poetry.packages import Locker
 
@@ -28,16 +27,13 @@ class TestApplication(Application):
         self._poetry.set_pool(poetry.pool)
         self._poetry.set_config(poetry.config)
         self._poetry.set_locker(
-            TestLocker(poetry.locker.lock.path, self._poetry.local_config)
+            TestLocker(poetry.locker.lock, self._poetry.local_config)
         )
 
 
 class TestLocker(Locker):
     def __init__(self, lock: str | Path, local_config: dict[str, Any]) -> None:
-        self._lock = TOMLFile(lock)
-        self._local_config = local_config
-        self._lock_data: TOMLDocument | None = None
-        self._content_hash = self._get_content_hash()
+        super().__init__(lock, local_config)
         self._locked = False
         self._write = False
 

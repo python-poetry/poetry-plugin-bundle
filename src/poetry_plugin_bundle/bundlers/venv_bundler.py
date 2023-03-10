@@ -5,7 +5,6 @@ import sys
 
 from subprocess import CalledProcessError
 from typing import TYPE_CHECKING
-from typing import cast
 
 from poetry_plugin_bundle.bundlers.bundler import Bundler
 
@@ -14,7 +13,8 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from cleo.io.io import IO
-    from poetry.core.semver.version import Version
+    from cleo.io.outputs.section_output import SectionOutput
+    from poetry.core.constraints.version import Version
     from poetry.poetry import Poetry
 
 
@@ -52,10 +52,10 @@ class VenvBundler(Bundler):
         from tempfile import TemporaryDirectory
 
         from cleo.io.null_io import NullIO
+        from poetry.core.constraints.version import Version
         from poetry.core.masonry.builders.wheel import WheelBuilder
         from poetry.core.masonry.utils.module import ModuleOrPackageNotFound
         from poetry.core.packages.package import Package
-        from poetry.core.semver.version import Version
         from poetry.installation.installer import Installer
         from poetry.installation.operations.install import Install
         from poetry.utils.env import EnvManager
@@ -74,7 +74,7 @@ class VenvBundler(Bundler):
 
         message = self._get_message(poetry, self._path)
         if io.is_decorated() and not io.is_debug():
-            io = io.section()
+            io = io.section()  # type: ignore[assignment]
 
         io.write_line(message)
 
@@ -134,7 +134,10 @@ class VenvBundler(Bundler):
         if self._activated_groups is not None:
             installer.only_groups(self._activated_groups)
         installer.requires_synchronization()
-        installer.use_executor(poetry.config.get("experimental.new-installer", False))
+        use_executor = poetry.config.get("experimental.new-installer", False)
+        if not use_executor:
+            # only set if false because the method is deprecated
+            installer.use_executor(False)
 
         return_code = installer.run()
         if return_code:
@@ -202,19 +205,17 @@ class VenvBundler(Bundler):
             f" (<b>{poetry.package.pretty_version}</b>) into <c2>{path}</c2>"
         )
 
-    def _write(self, io: IO, message: str) -> None:
+    def _write(self, io: IO | SectionOutput, message: str) -> None:
         from cleo.io.outputs.section_output import SectionOutput
 
         if io.is_debug() or not io.is_decorated() or not isinstance(io, SectionOutput):
             io.write_line(message)
             return
 
-        io = cast(SectionOutput, io)
         io.overwrite(message)
 
     def _get_executable_info(self, executable: str) -> tuple[str, Version]:
-        from poetry.core.semver.version import Version
-        from poetry.utils._compat import list_to_shell_command
+        from poetry.core.constraints.version import Version
 
         try:
             python_version = Version.parse(executable)
@@ -227,17 +228,14 @@ class VenvBundler(Bundler):
 
         try:
             python_version_str = subprocess.check_output(
-                list_to_shell_command(
-                    [
-                        executable,
-                        "-c",
-                        (
-                            "\"import sys; print('.'.join([str(s) for s in"
-                            ' sys.version_info[:3]]))"'
-                        ),
-                    ]
-                ),
-                shell=True,
+                [
+                    executable,
+                    "-c",
+                    (
+                        "import sys; print('.'.join([str(s) for s in"
+                        " sys.version_info[:3]]))"
+                    ),
+                ]
             ).decode()
         except CalledProcessError as e:
             from poetry.utils.env import EnvCommandError
