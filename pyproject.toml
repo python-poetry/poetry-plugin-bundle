@@ -18,11 +18,17 @@ include = [
 python = "^3.7"
 poetry = "^1.4.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pre-commit = ">=2.6"
 pytest = ">=7.1.2"
 pytest-mock = ">=3.6.1"
 mypy = ">=1.1.1"
+
+# only used in github actions
+[tool.poetry.group.github-actions]
+optional = true
+[tool.poetry.group.github-actions.dependencies]
+pytest-github-actions-annotate-failures = "^0.1.7"
 
 [tool.poetry.plugins."poetry.application.plugin"]
 export = "poetry_plugin_bundle.plugin:BundleApplicationPlugin"
@@ -57,6 +63,13 @@ module = [
   'cleo.*',
 ]
 ignore_missing_imports = true
+
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests"
+]
+
 
 [build-system]
 requires = ["poetry-core"]
