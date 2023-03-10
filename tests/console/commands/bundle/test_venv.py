@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from poetry.console.application import Application
+
 from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
 
@@ -32,6 +34,7 @@ def test_venv_calls_venv_bundler(
     assert app_tester.execute("bundle venv /foo --only dev") == 1
     assert app_tester.execute("bundle venv /foo --without main --with dev") == 1
 
+    assert isinstance(app_tester.application, Application)
     assert [
         mocker.call(app_tester.application.poetry, mocker.ANY),
         mocker.call(app_tester.application.poetry, mocker.ANY),

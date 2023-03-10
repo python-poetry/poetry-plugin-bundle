@@ -13,8 +13,8 @@ from cleo.io.buffered_io import BufferedIO
 from poetry.core.packages.package import Package
 from poetry.factory import Factory
 from poetry.puzzle.exceptions import SolverProblemError
-from poetry.repositories.pool import Pool
 from poetry.repositories.repository import Repository
+from poetry.repositories.repository_pool import RepositoryPool
 
 from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
@@ -43,7 +43,7 @@ def poetry(config: Config) -> Poetry:
     )
     poetry.set_config(config)
 
-    pool = Pool()
+    pool = RepositoryPool()
     repository = Repository("repo")
     repository.add_package(Package("foo", "1.0.0"))
     pool.add_repository(repository)
@@ -196,7 +196,7 @@ def test_bundler_should_display_a_warning_for_projects_with_no_module(
     )
     poetry.set_config(config)
 
-    pool = Pool()
+    pool = RepositoryPool()
     repository = Repository("repo")
     repository.add_package(Package("foo", "1.0.0"))
     pool.add_repository(repository)
@@ -235,7 +235,7 @@ def test_bundler_can_filter_dependency_groups(
     # foo is in the main dependency group
     # bar is a dev dependency
     # add a repository for foo but not bar
-    pool = Pool()
+    pool = RepositoryPool()
     repository = Repository("repo")
     repository.add_package(Package("foo", "1.0.0"))
     pool.add_repository(repository)

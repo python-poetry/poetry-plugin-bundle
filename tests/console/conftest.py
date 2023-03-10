@@ -27,7 +27,7 @@ def poetry(project_directory: str, config: Config) -> Poetry:
     p = Factory().create_poetry(
         Path(__file__).parent.parent / "fixtures" / project_directory
     )
-    p.set_locker(TestLocker(p.locker.lock.path, p.locker._local_config))
+    p.set_locker(TestLocker(p.locker.lock, p.locker._local_config))
 
     return p
 
