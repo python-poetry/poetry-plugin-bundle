@@ -33,7 +33,6 @@ class BundleCommand(GroupCommand):
         """
         Configure the given bundler based on command specific options and arguments.
         """
-        pass
 
     def handle(self) -> int:
         self.line("")
