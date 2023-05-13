@@ -240,7 +240,7 @@ class VenvBundler(Bundler):
         except CalledProcessError as e:
             from poetry.utils.env import EnvCommandError
 
-            raise EnvCommandError(e)
+            raise EnvCommandError(e) from None
 
         python_version = Version.parse(python_version_str.strip())
 
