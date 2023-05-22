@@ -134,8 +134,8 @@ class VenvBundler(Bundler):
         if self._activated_groups is not None:
             installer.only_groups(self._activated_groups)
         installer.requires_synchronization()
-        use_executor = poetry.config.get("experimental.new-installer", False)
-        if not use_executor:
+        use_executor = poetry.config.get("experimental.new-installer", None)
+        if use_executor is not None and not use_executor:
             # only set if false because the method is deprecated
             installer.use_executor(False)
 
