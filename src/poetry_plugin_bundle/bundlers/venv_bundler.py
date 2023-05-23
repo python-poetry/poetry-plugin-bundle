@@ -5,6 +5,7 @@ import sys
 
 from subprocess import CalledProcessError
 from typing import TYPE_CHECKING
+from pathlib import Path
 
 from poetry_plugin_bundle.bundlers.bundler import Bundler
 
@@ -23,7 +24,7 @@ class VenvBundler(Bundler):
 
     def __init__(self) -> None:
         self._path: Path
-        self._executable: str | None = None
+        self._executable: Path | None = None
         self._remove: bool = False
         self._activated_groups: set[str] | None = None
 
@@ -32,8 +33,8 @@ class VenvBundler(Bundler):
 
         return self
 
-    def set_executable(self, executable: str) -> VenvBundler:
-        self._executable = executable
+    def set_executable(self, executable: str | Path | None) -> VenvBundler:
+        self._executable = Path(executable) if executable else None
 
         return self
 
@@ -48,7 +49,6 @@ class VenvBundler(Bundler):
         return self
 
     def bundle(self, poetry: Poetry, io: IO) -> bool:
-        from pathlib import Path
         from tempfile import TemporaryDirectory
 
         from cleo.io.null_io import NullIO
@@ -134,8 +134,8 @@ class VenvBundler(Bundler):
         if self._activated_groups is not None:
             installer.only_groups(self._activated_groups)
         installer.requires_synchronization()
-        use_executor = poetry.config.get("experimental.new-installer", False)
-        if not use_executor:
+        use_executor = poetry.config.get("experimental.new-installer", None)
+        if use_executor is not None and not use_executor:
             # only set if false because the method is deprecated
             installer.use_executor(False)
 
@@ -214,14 +214,16 @@ class VenvBundler(Bundler):
 
         io.overwrite(message)
 
-    def _get_executable_info(self, executable: str) -> tuple[str, Version]:
+    def _get_executable_info(self, executable: Path) -> tuple[Path, Version]:
         from poetry.core.constraints.version import Version
 
+        executable_str = str(executable)
+
         try:
-            python_version = Version.parse(executable)
-            executable = f"python{python_version.major}"
+            python_version = Version.parse(executable_str)
+            executable_str = f"python{python_version.major}"
             if python_version.precision > 1:
-                executable += f".{python_version.minor}"
+                executable_str += f".{python_version.minor}"
         except ValueError:
             # Executable in PATH or full executable path
             pass
@@ -229,7 +231,7 @@ class VenvBundler(Bundler):
         try:
             python_version_str = subprocess.check_output(
                 [
-                    executable,
+                    executable_str,
                     "-c",
                     (
                         "import sys; print('.'.join([str(s) for s in"
@@ -244,4 +246,4 @@ class VenvBundler(Bundler):
 
         python_version = Version.parse(python_version_str.strip())
 
-        return executable, python_version
+        return Path(executable_str), python_version
