@@ -39,7 +39,10 @@ jobs:
 
       - name: Bootstrap poetry
         run: |
-          curl -sL https://install.python-poetry.org | python - -y --version 1.4.2 ${{ matrix.bootstrap-args }}
+          python -m pip install pipx
+          pipx ensurepath
+          pipx install poetry==1.5.0
+          pipx inject poetry virtualenv==20.23.0
 
       - name: Update PATH
         if: ${{ matrix.os != 'Windows' }}
@@ -66,12 +69,12 @@ jobs:
       - name: Install dependencies
         run: poetry install --with github-actions
 
-      - name: Upload venv
-        uses: actions/upload-artifact@v3
-        with:
-          name: venv
-          path: .venv
-          retention-days: 3
+#      - name: Upload venv
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: venv
+#          path: .venv
+#          retention-days: 3
 
       - name: Run pytest
         run: poetry run pytest -v
