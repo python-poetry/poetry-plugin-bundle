@@ -42,7 +42,7 @@ jobs:
           python -m pip install pipx
           pipx ensurepath
           pipx install poetry==1.5.0
-          pipx inject poetry virtualenv==20.21.1
+          pipx inject poetry virtualenv==20.22.0
 
       - name: Update PATH
         if: ${{ matrix.os != 'Windows' }}
