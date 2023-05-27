@@ -39,7 +39,7 @@ jobs:
 
       - name: Bootstrap poetry
         run: |
-          curl -sL https://install.python-poetry.org | python - -y --git https://github.com/python-poetry/poetry.git@master ${{ matrix.bootstrap-args }}
+          curl -sL https://install.python-poetry.org | python - -y --git https://github.com/python-poetry/poetry.git@1.5 ${{ matrix.bootstrap-args }}
 
       - name: Update PATH
         if: ${{ matrix.os != 'Windows' }}
