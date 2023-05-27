@@ -66,14 +66,11 @@ jobs:
       - name: Install dependencies
         run: poetry install --with github-actions
 
-      - name: zip venv
-        run: zip -r venv.zip .venv
-
       - name: Upload venv
         uses: actions/upload-artifact@v3
         with:
           name: venv
-          path: venv.zip
+          path: .venv
           retention-days: 3
 
       - name: Run pytest
