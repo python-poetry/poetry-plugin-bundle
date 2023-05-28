@@ -3,6 +3,7 @@ from __future__ import annotations
 import subprocess
 import sys
 
+from pathlib import Path
 from subprocess import CalledProcessError
 from typing import TYPE_CHECKING
 
@@ -10,8 +11,6 @@ from poetry_plugin_bundle.bundlers.bundler import Bundler
 
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from cleo.io.io import IO
     from cleo.io.outputs.section_output import SectionOutput
     from poetry.core.constraints.version import Version
@@ -32,7 +31,7 @@ class VenvBundler(Bundler):
 
         return self
 
-    def set_executable(self, executable: str) -> VenvBundler:
+    def set_executable(self, executable: str | None) -> VenvBundler:
         self._executable = executable
 
         return self
@@ -65,10 +64,10 @@ class VenvBundler(Bundler):
         warnings = []
 
         manager = EnvManager(poetry)
-        executable = self._executable
-        if self._executable is not None:
+        if self._executable:
             executable, python_version = self._get_executable_info(self._executable)
         else:
+            executable = None
             version_info = SystemEnv(Path(sys.prefix)).get_version_info()
             python_version = Version.parse(".".join(str(v) for v in version_info[:3]))
 
@@ -93,7 +92,7 @@ class VenvBundler(Bundler):
                     io, f"{message}: <info>Removing existing virtual environment</info>"
                 )
 
-                manager.remove_venv(str(self._path))
+                manager.remove_venv(self._path)
 
                 self._write(
                     io,
@@ -103,7 +102,7 @@ class VenvBundler(Bundler):
                     ),
                 )
 
-                manager.build_venv(str(self._path), executable=executable)
+                manager.build_venv(self._path, executable=executable)
             else:
                 self._write(
                     io, f"{message}: <info>Using existing virtual environment</info>"
@@ -117,7 +116,7 @@ class VenvBundler(Bundler):
                 ),
             )
 
-            manager.build_venv(str(self._path), executable=executable)
+            manager.build_venv(self._path, executable=executable)
 
         env = VirtualEnv(self._path)
 
@@ -134,10 +133,6 @@ class VenvBundler(Bundler):
         if self._activated_groups is not None:
             installer.only_groups(self._activated_groups)
         installer.requires_synchronization()
-        use_executor = poetry.config.get("experimental.new-installer", False)
-        if not use_executor:
-            # only set if false because the method is deprecated
-            installer.use_executor(False)
 
         return_code = installer.run()
         if return_code:
@@ -214,7 +209,7 @@ class VenvBundler(Bundler):
 
         io.overwrite(message)
 
-    def _get_executable_info(self, executable: str) -> tuple[str, Version]:
+    def _get_executable_info(self, executable: str) -> tuple[Path, Version]:
         from poetry.core.constraints.version import Version
 
         try:
@@ -244,4 +239,4 @@ class VenvBundler(Bundler):
 
         python_version = Version.parse(python_version_str.strip())
 
-        return executable, python_version
+        return Path(executable), python_version
