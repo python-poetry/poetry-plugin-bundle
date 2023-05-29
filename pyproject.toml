@@ -6,6 +6,7 @@ authors = ["Sébastien Eustace <sebastien@eustace.io>"]
 license = "MIT"
 readme = "README.md"
 
+
 packages = [
     { include = "poetry_plugin_bundle", from = "src" }
 ]
