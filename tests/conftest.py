@@ -73,7 +73,7 @@ def config(
 def tmp_venv(tmp_path: Path) -> Iterator[VirtualEnv]:
     venv_path = tmp_path / "venv"
 
-    EnvManager.build_venv(str(venv_path))
+    EnvManager.build_venv(venv_path)
 
     venv = VirtualEnv(venv_path)
     yield venv

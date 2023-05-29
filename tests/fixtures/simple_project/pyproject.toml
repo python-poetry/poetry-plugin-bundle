@@ -25,6 +25,10 @@ classifiers = [
 python = "~2.7 || ^3.4"
 foo = "^1.0.0"
 
+[tool.poetry.group.dev]
+optional = true
+dependencies = {}
+
 [tool.poetry.scripts]
 foo = "foo:bar"
 baz = "bar:baz.boom.bim"
