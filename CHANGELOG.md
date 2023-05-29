@@ -1,6 +1,13 @@
 # Change Log
 
 
+## [1.3.0] - 2023-05-29
+
+### Added
+
+- Ensure compatibility with poetry 1.5 ([#61](https://github.com/python-poetry/poetry-plugin-bundle/pull/61)).
+
+
 ## [1.2.0] - 2023-03-19
 
 ### Added
@@ -24,7 +31,8 @@
 Initial version.
 
 
-[Unreleased]: https://github.com/python-poetry/poetry-plugin-bundle/compare/1.2.0...main
+[Unreleased]: https://github.com/python-poetry/poetry-plugin-bundle/compare/1.3.0...main
+[1.3.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.3.0
 [1.2.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.2.0
 [1.1.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.1.0
 [1.0.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.0.0
