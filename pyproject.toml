@@ -15,7 +15,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 poetry = "^1.5.0"
 
 [tool.poetry.group.dev.dependencies]
@@ -39,7 +39,7 @@ fix = true
 unfixable = [
     "ERA", # do not autoremove commented out code
 ]
-target-version = "py37"
+target-version = "py38"
 line-length = 88
 extend-select = [
     "B",   # flake8-bugbear
