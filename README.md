@@ -1,5 +1,7 @@
 # Poetry Plugin: Bundle
 
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+
 This package is a plugin that allows the bundling of Poetry projects into various formats.
 
 ## Installation
