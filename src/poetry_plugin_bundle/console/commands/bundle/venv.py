@@ -17,19 +17,17 @@ class BundleVenvCommand(BundleCommand):
     name = "bundle venv"
     description = "Bundle the current project into a virtual environment"
 
-    arguments = [
+    arguments = [  # noqa: RUF012
         argument("path", "The path to the virtual environment to bundle into.")
     ]
 
-    options = [
+    options = [  # noqa: RUF012
         *BundleCommand._group_dependency_options(),
         option(
             "python",
             "p",
-            (
-                "The Python executable to use to create the virtual environment. "
-                "Defaults to the current Python executable"
-            ),
+            "The Python executable to use to create the virtual environment. "
+            "Defaults to the current Python executable",
             flag=False,
             value_required=True,
         ),
