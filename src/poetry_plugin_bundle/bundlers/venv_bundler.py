@@ -96,10 +96,8 @@ class VenvBundler(Bundler):
 
                 self._write(
                     io,
-                    (
-                        f"{message}: <info>Creating a virtual environment using Python"
-                        f" <b>{python_version}</b></info>"
-                    ),
+                    f"{message}: <info>Creating a virtual environment using Python"
+                    f" <b>{python_version}</b></info>",
                 )
 
                 manager.build_venv(self._path, executable=executable)
@@ -110,10 +108,8 @@ class VenvBundler(Bundler):
         else:
             self._write(
                 io,
-                (
-                    f"{message}: <info>Creating a virtual environment using Python"
-                    f" <b>{python_version}</b></info>"
-                ),
+                f"{message}: <info>Creating a virtual environment using Python"
+                f" <b>{python_version}</b></info>",
             )
 
             manager.build_venv(self._path, executable=executable)
@@ -145,10 +141,8 @@ class VenvBundler(Bundler):
 
         self._write(
             io,
-            (
-                f"{message}: <info>Installing <c1>{poetry.package.pretty_name}</c1>"
-                f" (<b>{poetry.package.pretty_version}</b>)</info>"
-            ),
+            f"{message}: <info>Installing <c1>{poetry.package.pretty_name}</c1>"
+            f" (<b>{poetry.package.pretty_version}</b>)</info>",
         )
 
         # Build a wheel of the project in a temporary directory
