@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 class BundlerManager:
     def __init__(self) -> None:
-        from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
         from poetry_plugin_bundle.bundlers.archive_bundler import ArchiveBundler
+        from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
         self._bundler_classes: dict[str, type[Bundler]] = {}
 

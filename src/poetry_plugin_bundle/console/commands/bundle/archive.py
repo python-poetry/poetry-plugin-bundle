@@ -17,9 +17,7 @@ class BundleArchiveCommand(BundleCommand):
     name = "bundle archive"
     description = "Bundle the current project into an archive (.zip, .tar)"
 
-    arguments = [  # noqa: RUF012
-        argument("path", "Path to save archive in")
-    ]
+    arguments = [argument("path", "Path to save archive in")]  # noqa: RUF012
 
     options = [  # noqa: RUF012
         *BundleCommand._group_dependency_options(),
@@ -42,19 +40,21 @@ class BundleArchiveCommand(BundleCommand):
             "f",
             "Archive format as supported by shutil.make_archive",
             flag=False,
-            default="zip"
+            default="zip",
         ),
         option(
             "site-packages-only",
             None,
             "Only archive the Lib/site-packages directory",
             flag=True,
-        )
+        ),
     ]
 
     bundler_name = "archive"
 
-    def configure_bundler(self, bundler: ArchiveBundler) -> None:  # type: ignore[override]
+    def configure_bundler(
+        self, bundler: ArchiveBundler  # type: ignore[override]
+    ) -> None:
         bundler.set_path(Path(self.argument("path")))
         bundler.set_executable(self.option("python"))
         bundler.set_remove(self.option("clear"))

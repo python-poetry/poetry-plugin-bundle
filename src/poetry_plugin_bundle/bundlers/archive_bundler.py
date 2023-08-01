@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import os.path
 import tempfile
+
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -9,11 +9,11 @@ from cleo.io.null_io import NullIO
 
 from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
-if TYPE_CHECKING:
-    from typing import Self
 
+if TYPE_CHECKING:
     from cleo.io.io import IO
     from poetry.poetry import Poetry
+    from typing_extensions import Self
 
 
 class ArchiveBundler(VenvBundler):
@@ -21,7 +21,7 @@ class ArchiveBundler(VenvBundler):
 
     def __init__(self) -> None:
         super().__init__()
-        self._ar_path = "output"
+        self._ar_path = Path("output")
         self._format = "zip"
         self._site_packages_only = False
 
@@ -50,9 +50,11 @@ class ArchiveBundler(VenvBundler):
 
             dir_path = self._path
             if self._site_packages_only:
-                dir_path = os.path.join(dir_path, 'Lib', 'site-packages')
+                dir_path = dir_path.joinpath("Lib", "site-packages")
 
-            self._write(io, f"Creating archive {self._ar_path} using format {self._format}")
+            self._write(
+                io, f"Creating archive {self._ar_path} using format {self._format}"
+            )
 
             try:
                 shutil.make_archive(str(self._ar_path), self._format, dir_path)
