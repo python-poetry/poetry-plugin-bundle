@@ -25,6 +25,9 @@ class VenvBundler(Bundler):
         self._executable: str | None = None
         self._remove: bool = False
         self._activated_groups: set[str] | None = None
+        self._extras: set[str] | None = None
+        self._no_directory: bool = False
+        self._no_root: bool = False
 
     def set_path(self, path: Path) -> VenvBundler:
         self._path = path
@@ -43,6 +46,21 @@ class VenvBundler(Bundler):
 
     def set_remove(self, remove: bool = True) -> VenvBundler:
         self._remove = remove
+
+        return self
+
+    def set_extras(self, extras: set[str]) -> VenvBundler:
+        self._extras = extras
+
+        return self
+
+    def set_no_directory(self, no_directory: bool = True) -> VenvBundler:
+        self._no_directory = no_directory
+
+        return self
+
+    def set_no_root(self, no_root: bool = True) -> VenvBundler:
+        self._no_root = no_root
 
         return self
 
@@ -128,6 +146,9 @@ class VenvBundler(Bundler):
         )
         if self._activated_groups is not None:
             installer.only_groups(self._activated_groups)
+        if self._extras is not None:
+            installer.extras(list(self._extras))
+        installer.skip_directory(self._no_directory)
         installer.requires_synchronization()
 
         return_code = installer.run()
@@ -138,6 +159,9 @@ class VenvBundler(Bundler):
                 + ": <error>Failed</> at step <b>Installing dependencies</b>",
             )
             return False
+
+        if self._no_root:
+            return True
 
         self._write(
             io,
