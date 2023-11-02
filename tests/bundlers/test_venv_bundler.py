@@ -70,7 +70,7 @@ def test_bundler_should_build_a_new_venv_with_existing_python(
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {tmpdir}
-"""  # noqa: E501
+"""
     assert expected == io.fetch_output()
 
 
@@ -93,7 +93,7 @@ def test_bundler_should_build_a_new_venv_with_given_executable(
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {tmpdir}
-"""  # noqa: E501
+"""
     assert expected == io.fetch_output()
 
 
@@ -115,7 +115,7 @@ def test_bundler_should_build_a_new_venv_if_existing_venv_is_incompatible(
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {tmpdir}
-"""  # noqa: E501
+"""
     assert expected == io.fetch_output()
 
 
@@ -160,7 +160,7 @@ def test_bundler_should_remove_an_existing_venv_if_forced(
   • Bundling simple-project (1.2.3) into {path}: Installing dependencies
   • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {path}
-"""  # noqa: E501
+"""
     assert expected == io.fetch_output()
 
 
@@ -184,7 +184,7 @@ def test_bundler_should_fail_when_installation_fails(
   • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Python {python_version}
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
   • Bundling simple-project (1.2.3) into {tmpdir}: Failed at step Installing dependencies
-"""  # noqa: E501
+"""
     assert expected == io.fetch_output()
 
 
@@ -220,7 +220,7 @@ def test_bundler_should_display_a_warning_for_projects_with_no_module(
   • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {path}
   • The root package was not installed because no matching module or package was found.
-"""  # noqa: E501
+"""
     assert expected == io.fetch_output()
 
 
@@ -266,5 +266,5 @@ def test_bundler_can_filter_dependency_groups(
   • Bundling simple-project (1.2.3) into {path}: Installing dependencies
   • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {path}
-"""  # noqa: E501
+"""
     assert expected == io.fetch_output()
