@@ -37,6 +37,14 @@ class BundleVenvCommand(BundleCommand):
             "Clear the existing virtual environment if it exists. ",
             flag=True,
         ),
+        option(
+            "compile",
+            None,
+            "Compile Python source files to bytecode."
+            " (This option has no effect if modern-installation is disabled"
+            " because the old installer always compiles.)",
+            flag=True,
+        ),
     ]
 
     bundler_name = "venv"
@@ -45,4 +53,5 @@ class BundleVenvCommand(BundleCommand):
         bundler.set_path(Path(self.argument("path")))
         bundler.set_executable(self.option("python"))
         bundler.set_remove(self.option("clear"))
+        bundler.set_compile(self.option("compile"))
         bundler.set_activated_groups(self.activated_groups)
