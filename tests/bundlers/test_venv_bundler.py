@@ -273,7 +273,7 @@ def test_bundler_can_filter_dependency_groups(
 @pytest.mark.parametrize("compile", [True, False])
 def test_bundler_passes_compile_flag(
     io: BufferedIO, tmp_venv: VirtualEnv, poetry: Poetry, mocker: MockerFixture, compile: bool
-):
+) -> None:
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
 
     bundler = VenvBundler()
