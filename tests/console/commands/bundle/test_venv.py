@@ -18,12 +18,13 @@ def test_venv_calls_venv_bundler(
 ) -> None:
     mock = mocker.patch(
         "poetry_plugin_bundle.bundlers.venv_bundler.VenvBundler.bundle",
-        side_effect=[True, False, False, False],
+        side_effect=[True, False, False, False, False],
     )
     set_path = mocker.spy(VenvBundler, "set_path")
     set_executable = mocker.spy(VenvBundler, "set_executable")
     set_remove = mocker.spy(VenvBundler, "set_remove")
     set_activated_groups = mocker.spy(VenvBundler, "set_activated_groups")
+    set_compile = mocker.spy(VenvBundler, "set_compile")
 
     app_tester.application.catch_exceptions(False)
     assert app_tester.execute("bundle venv /foo") == 0
@@ -33,9 +34,11 @@ def test_venv_calls_venv_bundler(
     )
     assert app_tester.execute("bundle venv /foo --only dev") == 1
     assert app_tester.execute("bundle venv /foo --without main --with dev") == 1
+    assert app_tester.execute("bundle venv /foo --compile") == 1
 
     assert isinstance(app_tester.application, Application)
     assert [
+        mocker.call(app_tester.application.poetry, mocker.ANY),
         mocker.call(app_tester.application.poetry, mocker.ANY),
         mocker.call(app_tester.application.poetry, mocker.ANY),
         mocker.call(app_tester.application.poetry, mocker.ANY),
@@ -47,10 +50,12 @@ def test_venv_calls_venv_bundler(
         mocker.call(mocker.ANY, Path("/foo")),
         mocker.call(mocker.ANY, Path("/foo")),
         mocker.call(mocker.ANY, Path("/foo")),
+        mocker.call(mocker.ANY, Path("/foo")),
     ]
     assert set_executable.call_args_list == [
         mocker.call(mocker.ANY, None),
         mocker.call(mocker.ANY, "python3.8"),
+        mocker.call(mocker.ANY, None),
         mocker.call(mocker.ANY, None),
         mocker.call(mocker.ANY, None),
     ]
@@ -59,10 +64,20 @@ def test_venv_calls_venv_bundler(
         mocker.call(mocker.ANY, True),
         mocker.call(mocker.ANY, False),
         mocker.call(mocker.ANY, False),
+        mocker.call(mocker.ANY, False),
     ]
     assert set_activated_groups.call_args_list == [
         mocker.call(mocker.ANY, {"main"}),
         mocker.call(mocker.ANY, {"main", "dev"}),
         mocker.call(mocker.ANY, {"dev"}),
         mocker.call(mocker.ANY, {"dev"}),
+        mocker.call(mocker.ANY, {"main"}),
+    ]
+
+    assert set_compile.call_args_list == [
+        mocker.call(mocker.ANY, False),
+        mocker.call(mocker.ANY, False),
+        mocker.call(mocker.ANY, False),
+        mocker.call(mocker.ANY, False),
+        mocker.call(mocker.ANY, True),
     ]
