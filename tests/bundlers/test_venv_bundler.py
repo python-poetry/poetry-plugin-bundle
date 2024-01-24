@@ -270,6 +270,30 @@ def test_bundler_can_filter_dependency_groups(
 """
     assert expected == io.fetch_output()
 
+@pytest.mark.parametrize("compile", [True, False])
+def test_bundler_passes_compile_flag(
+    io: BufferedIO, tmp_venv: VirtualEnv, poetry: Poetry, mocker: MockerFixture, compile: bool
+):
+    mocker.patch("poetry.installation.executor.Executor._execute_operation")
+
+    bundler = VenvBundler()
+    bundler.set_path(tmp_venv.path)
+    bundler.set_remove(True)
+    bundler.set_compile(compile)
+
+    assert bundler.bundle(poetry, io)
+
+    path = str(tmp_venv.path)
+    python_version = ".".join(str(v) for v in sys.version_info[:3])
+    expected = f"""\
+  • Bundling simple-project (1.2.3) into {path}
+  • Bundling simple-project (1.2.3) into {path}: Removing existing virtual environment
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {path}: Installing dependencies
+  • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
+  • Bundled simple-project (1.2.3) into {path}
+"""
+    assert expected == io.fetch_output()
 
 def test_bundler_editable_deps(
     io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture, config: Config
