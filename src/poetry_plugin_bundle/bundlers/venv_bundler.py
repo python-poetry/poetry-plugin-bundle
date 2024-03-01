@@ -216,11 +216,13 @@ class VenvBundler(Bundler):
             pass
 
         try:
-            python_version_str = subprocess.check_output([
-                executable,
-                "-c",
-                "import sys; print('.'.join([str(s) for s in sys.version_info[:3]]))",
-            ]).decode()
+            python_version_str = subprocess.check_output(
+                [
+                    executable,
+                    "-c",
+                    "import sys; print('.'.join([str(s) for s in sys.version_info[:3]]))",
+                ]
+            ).decode()
         except CalledProcessError as e:
             from poetry.utils.env import EnvCommandError
 
