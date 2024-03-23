@@ -25,6 +25,7 @@ class VenvBundler(Bundler):
         self._executable: str | None = None
         self._remove: bool = False
         self._activated_groups: set[str] | None = None
+        self._compile: bool = False
 
     def set_path(self, path: Path) -> VenvBundler:
         self._path = path
@@ -43,6 +44,11 @@ class VenvBundler(Bundler):
 
     def set_remove(self, remove: bool = True) -> VenvBundler:
         self._remove = remove
+
+        return self
+
+    def set_compile(self, compile: bool = False) -> VenvBundler:
+        self._compile = compile
 
         return self
 
@@ -129,6 +135,8 @@ class VenvBundler(Bundler):
         if self._activated_groups is not None:
             installer.only_groups(self._activated_groups)
         installer.requires_synchronization()
+
+        installer.executor.enable_bytecode_compilation(self._compile)
 
         return_code = installer.run()
         if return_code:
