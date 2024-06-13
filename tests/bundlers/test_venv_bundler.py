@@ -14,6 +14,7 @@ from poetry.core.packages.package import Package
 from poetry.factory import Factory
 from poetry.puzzle.exceptions import SolverProblemError
 from poetry.repositories.repository import Repository
+from poetry.utils.env import MockEnv
 from poetry.repositories.repository_pool import RepositoryPool
 
 from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
@@ -106,6 +107,9 @@ def test_bundler_should_build_a_new_venv_if_existing_venv_is_incompatible(
 ) -> None:
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
 
+    mock_env = MockEnv(path=Path(tmpdir), is_venv=True, version_info=(1, 2, 3))
+    mocker.patch("poetry.utils.env.EnvManager.get", return_value=mock_env)
+
     bundler = VenvBundler()
     bundler.set_path(Path(tmpdir))
 
@@ -118,6 +122,7 @@ def test_bundler_should_build_a_new_venv_if_existing_venv_is_incompatible(
     expected = f"""\
   • Bundling simple-project (1.2.3) into {tmpdir}
   • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Poetry-determined Python
+  • Bundling simple-project (1.2.3) into {tmpdir}: Replacing existing virtual environment due to incompatible Python version
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {tmpdir}
