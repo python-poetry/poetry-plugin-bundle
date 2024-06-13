@@ -76,9 +76,9 @@ class VenvBundler(Bundler):
             def use_in_project_venv(self) -> bool:
                 return True
 
-            def create_venv_at_path(self, path: Path, executable: Path | None = None):
+            def create_venv_at_path(self, path: Path, executable: Path | None, force: bool):
                 self._path = path
-                self.create_venv(name=None, executable=executable, force=True)
+                self.create_venv(name=None, executable=executable, force=force)
 
         warnings = []
 
@@ -103,7 +103,7 @@ class VenvBundler(Bundler):
                 f"{message}: <info>Creating a virtual environment using Poetry-determined Python"
             )
 
-        manager.create_venv_at_path(self._path, executable=executable)
+        manager.create_venv_at_path(self._path, executable=executable, force=self._remove)
 
         env = VirtualEnv(self._path)
 
