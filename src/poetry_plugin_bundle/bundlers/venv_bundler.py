@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from poetry_plugin_bundle.bundlers.bundler import Bundler
 
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from cleo.io.io import IO
     from cleo.io.outputs.section_output import SectionOutput
     from poetry.poetry import Poetry
@@ -51,8 +52,8 @@ class VenvBundler(Bundler):
         from poetry.core.packages.package import Package
         from poetry.installation.installer import Installer
         from poetry.installation.operations.install import Install
-        from poetry.utils.env import EnvManager
         from poetry.utils.env import Env
+        from poetry.utils.env import EnvManager
         from poetry.utils.env.exceptions import InvalidCurrentPythonVersionError
 
         class CustomEnvManager(EnvManager):
@@ -62,6 +63,7 @@ class VenvBundler(Bundler):
             It works by hijacking the "in_project_venv" concept so that we can get that behavior, but with a custom
             path.
             """
+
             @property
             def in_project_venv(self) -> Path:
                 return self._path
@@ -69,7 +71,9 @@ class VenvBundler(Bundler):
             def use_in_project_venv(self) -> bool:
                 return True
 
-            def create_venv_at_path(self, path: Path, executable: Path | None, force: bool) -> Env:
+            def create_venv_at_path(
+                self, path: Path, executable: Path | None, force: bool
+            ) -> Env:
                 self._path = path
                 return self.create_venv(name=None, executable=executable, force=force)
 
@@ -93,16 +97,21 @@ class VenvBundler(Bundler):
         else:
             self._write(
                 io,
-                f"{message}: <info>Creating a virtual environment using Poetry-determined Python"
+                f"{message}: <info>Creating a virtual environment using Poetry-determined Python",
             )
 
         try:
-            env = manager.create_venv_at_path(self._path, executable=executable, force=self._remove)
+            env = manager.create_venv_at_path(
+                self._path, executable=executable, force=self._remove
+            )
         except InvalidCurrentPythonVersionError:
             self._write(
-                io, f"{message}: <info>Replacing existing virtual environment due to incompatible Python version</info>"
+                io,
+                f"{message}: <info>Replacing existing virtual environment due to incompatible Python version</info>",
             )
-            env = manager.create_venv_at_path(self._path, executable=executable, force=True)
+            env = manager.create_venv_at_path(
+                self._path, executable=executable, force=True
+            )
 
         self._write(io, f"{message}: <info>Installing dependencies</info>")
 
