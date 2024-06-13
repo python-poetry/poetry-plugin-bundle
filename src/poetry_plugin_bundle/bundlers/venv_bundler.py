@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-import subprocess
-import sys
-
 from pathlib import Path
-from subprocess import CalledProcessError
 from typing import TYPE_CHECKING
 
 from poetry_plugin_bundle.bundlers.bundler import Bundler
@@ -13,7 +9,6 @@ from poetry_plugin_bundle.bundlers.bundler import Bundler
 if TYPE_CHECKING:
     from cleo.io.io import IO
     from cleo.io.outputs.section_output import SectionOutput
-    from poetry.core.constraints.version import Version
     from poetry.poetry import Poetry
     from poetry.repositories.lockfile_repository import LockfileRepository
 
@@ -58,7 +53,6 @@ class VenvBundler(Bundler):
         from tempfile import TemporaryDirectory
 
         from cleo.io.null_io import NullIO
-        from poetry.core.constraints.version import Version
         from poetry.core.masonry.builders.wheel import WheelBuilder
         from poetry.core.masonry.utils.module import ModuleOrPackageNotFound
         from poetry.core.packages.package import Package
@@ -66,18 +60,30 @@ class VenvBundler(Bundler):
         from poetry.installation.operations.install import Install
         from poetry.packages.locker import Locker
         from poetry.utils.env import EnvManager
-        from poetry.utils.env import SystemEnv
         from poetry.utils.env import VirtualEnv
+
+        class CustomEnvManager(EnvManager):
+            """
+            This class is used as an adapter for allowing us to use Poetry's EnvManager.create_venv but with
+            a custom path.
+            It works by hijacking the "in_project_venv" concept so that we can get that behavior, but with a custom
+            path.
+            """
+            @property
+            def in_project_venv(self) -> Path:
+                return self._path
+
+            def use_in_project_venv(self) -> bool:
+                return True
+
+            def create_venv_at_path(self, path: Path, executable: Path | None = None):
+                self._path = path
+                self.create_venv(name=None, executable=executable, force=True)
 
         warnings = []
 
-        manager = EnvManager(poetry)
-        if self._executable:
-            executable, python_version = self._get_executable_info(self._executable)
-        else:
-            executable = None
-            version_info = SystemEnv(Path(sys.prefix)).get_version_info()
-            python_version = Version.parse(".".join(str(v) for v in version_info[:3]))
+        manager = CustomEnvManager(poetry)
+        executable = Path(self._executable) if self._executable else None
 
         message = self._get_message(poetry, self._path)
         if io.is_decorated() and not io.is_debug():
@@ -85,42 +91,19 @@ class VenvBundler(Bundler):
 
         io.write_line(message)
 
-        if self._path.exists():
-            env = VirtualEnv(self._path)
-            env_python_version = Version.parse(
-                ".".join(str(v) for v in env.version_info[:3])
-            )
-
-            if (
-                not env.is_sane()
-                or env_python_version != python_version
-                or self._remove
-            ):
-                self._write(
-                    io, f"{message}: <info>Removing existing virtual environment</info>"
-                )
-
-                manager.remove_venv(self._path)
-
-                self._write(
-                    io,
-                    f"{message}: <info>Creating a virtual environment using Python"
-                    f" <b>{python_version}</b></info>",
-                )
-
-                manager.build_venv(self._path, executable=executable)
-            else:
-                self._write(
-                    io, f"{message}: <info>Using existing virtual environment</info>"
-                )
-        else:
+        if executable:
             self._write(
                 io,
                 f"{message}: <info>Creating a virtual environment using Python"
-                f" <b>{python_version}</b></info>",
+                f" <b>{executable}</b></info>",
+            )
+        else:
+            self._write(
+                io,
+                f"{message}: <info>Creating a virtual environment using Poetry-determined Python"
             )
 
-            manager.build_venv(self._path, executable=executable)
+        manager.create_venv_at_path(self._path, executable=executable)
 
         env = VirtualEnv(self._path)
 
@@ -221,32 +204,3 @@ class VenvBundler(Bundler):
             return
 
         io.overwrite(message)
-
-    def _get_executable_info(self, executable: str) -> tuple[Path, Version]:
-        from poetry.core.constraints.version import Version
-
-        try:
-            python_version = Version.parse(executable)
-            executable = f"python{python_version.major}"
-            if python_version.precision > 1:
-                executable += f".{python_version.minor}"
-        except ValueError:
-            # Executable in PATH or full executable path
-            pass
-
-        try:
-            python_version_str = subprocess.check_output(
-                [
-                    executable,
-                    "-c",
-                    "import sys; print('.'.join([str(s) for s in sys.version_info[:3]]))",
-                ]
-            ).decode()
-        except CalledProcessError as e:
-            from poetry.utils.env import EnvCommandError
-
-            raise EnvCommandError(e) from None
-
-        python_version = Version.parse(python_version_str.strip())
-
-        return Path(executable), python_version
