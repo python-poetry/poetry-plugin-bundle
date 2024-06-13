@@ -60,7 +60,8 @@ class VenvBundler(Bundler):
         from poetry.installation.operations.install import Install
         from poetry.packages.locker import Locker
         from poetry.utils.env import EnvManager
-        from poetry.utils.env import VirtualEnv
+        from poetry.utils.env import Env
+        from poetry.utils.env.exceptions import InvalidCurrentPythonVersionError
 
         class CustomEnvManager(EnvManager):
             """
@@ -76,9 +77,9 @@ class VenvBundler(Bundler):
             def use_in_project_venv(self) -> bool:
                 return True
 
-            def create_venv_at_path(self, path: Path, executable: Path | None, force: bool):
+            def create_venv_at_path(self, path: Path, executable: Path | None, force: bool) -> Env:
                 self._path = path
-                self.create_venv(name=None, executable=executable, force=force)
+                return self.create_venv(name=None, executable=executable, force=force)
 
         warnings = []
 
@@ -103,9 +104,13 @@ class VenvBundler(Bundler):
                 f"{message}: <info>Creating a virtual environment using Poetry-determined Python"
             )
 
-        manager.create_venv_at_path(self._path, executable=executable, force=self._remove)
-
-        env = VirtualEnv(self._path)
+        try:
+            env = manager.create_venv_at_path(self._path, executable=executable, force=self._remove)
+        except InvalidCurrentPythonVersionError:
+            self._write(
+                io, f"{message}: <info>Replacing existing virtual environment due to incompatible Python version</info>"
+            )
+            env = manager.create_venv_at_path(self._path, executable=executable, force=True)
 
         self._write(io, f"{message}: <info>Installing dependencies</info>")
 
