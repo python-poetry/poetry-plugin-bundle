@@ -15,8 +15,8 @@ from poetry.factory import Factory
 from poetry.installation.operations.install import Install
 from poetry.puzzle.exceptions import SolverProblemError
 from poetry.repositories.repository import Repository
-from poetry.utils.env import MockEnv
 from poetry.repositories.repository_pool import RepositoryPool
+from poetry.utils.env import MockEnv
 
 from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
@@ -54,7 +54,7 @@ def poetry(config: Config) -> Poetry:
     return poetry
 
 
-def _create_venv_marker_file(tempdir: str) -> Path:
+def _create_venv_marker_file(tempdir: str | Path) -> Path:
     marker_file = Path(tempdir) / "existing-venv-marker.txt"
     marker_file.write_text("This file should get deleted as part of venv recreation.")
     return marker_file
