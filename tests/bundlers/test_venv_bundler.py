@@ -286,7 +286,14 @@ def test_bundler_passes_compile_flag(
     bundler.set_remove(True)
     bundler.set_compile(compile)
 
+    # bundle passes the flag from set_compile to enable_bytecode_compilation method
+    mocker = mocker.patch(
+        "poetry.installation.executor.Executor.enable_bytecode_compilation"
+    )
+
     assert bundler.bundle(poetry, io)
+
+    mocker.assert_called_once_with(compile)
 
     path = str(tmp_venv.path)
     python_version = ".".join(str(v) for v in sys.version_info[:3])
