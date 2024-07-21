@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from cleo.io.outputs.section_output import SectionOutput
     from poetry.core.constraints.version import Version
     from poetry.poetry import Poetry
+    from poetry.repositories.lockfile_repository import LockfileRepository
 
 
 class VenvBundler(Bundler):
@@ -57,7 +58,6 @@ class VenvBundler(Bundler):
         from poetry.core.packages.package import Package
         from poetry.installation.installer import Installer
         from poetry.packages.locker import Locker
-        from poetry.repositories.lockfile_repository import LockfileRepository
         from poetry.installation.operations.install import Install
         from poetry.utils.env import EnvManager
         from poetry.utils.env import SystemEnv
