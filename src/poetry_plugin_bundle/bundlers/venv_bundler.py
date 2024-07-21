@@ -57,8 +57,8 @@ class VenvBundler(Bundler):
         from poetry.core.masonry.utils.module import ModuleOrPackageNotFound
         from poetry.core.packages.package import Package
         from poetry.installation.installer import Installer
-        from poetry.packages.locker import Locker
         from poetry.installation.operations.install import Install
+        from poetry.packages.locker import Locker
         from poetry.utils.env import EnvManager
         from poetry.utils.env import SystemEnv
         from poetry.utils.env import VirtualEnv
@@ -119,7 +119,7 @@ class VenvBundler(Bundler):
         env = VirtualEnv(self._path)
 
         self._write(io, f"{message}: <info>Installing dependencies</info>")
-            
+
         class CustomLocker(Locker):
             def locked_repository(self) -> LockfileRepository:
                 repo = super().locked_repository()
