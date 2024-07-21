@@ -300,7 +300,7 @@ def test_bundler_editable_deps(
 """
     assert expected == io.fetch_output()
 
-    installed_packages = map(lambda call: call.args[1], install_spy.call_args_list)
+    installed_packages = [call.args[1] for call in install_spy.call_args_list]
     dep_installs = list(filter(lambda package: package.name == 'bar', installed_packages))
     assert len(dep_installs) > 0
 
