@@ -16,6 +16,7 @@ from poetry.installation.operations.install import Install
 from poetry.puzzle.exceptions import SolverProblemError
 from poetry.repositories.repository import Repository
 from poetry.repositories.repository_pool import RepositoryPool
+from poetry.utils.env import MockEnv
 
 from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
@@ -53,6 +54,12 @@ def poetry(config: Config) -> Poetry:
     return poetry
 
 
+def _create_venv_marker_file(tempdir: str | Path) -> Path:
+    marker_file = Path(tempdir) / "existing-venv-marker.txt"
+    marker_file.write_text("This file should get deleted as part of venv recreation.")
+    return marker_file
+
+
 def test_bundler_should_build_a_new_venv_with_existing_python(
     io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture
 ) -> None:
@@ -64,10 +71,9 @@ def test_bundler_should_build_a_new_venv_with_existing_python(
 
     assert bundler.bundle(poetry, io)
 
-    python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
   • Bundling simple-project (1.2.3) into {tmpdir}
-  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Poetry-determined Python
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {tmpdir}
@@ -87,10 +93,9 @@ def test_bundler_should_build_a_new_venv_with_given_executable(
 
     assert bundler.bundle(poetry, io)
 
-    python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
   • Bundling simple-project (1.2.3) into {tmpdir}
-  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Python {sys.executable}
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {tmpdir}
@@ -103,16 +108,22 @@ def test_bundler_should_build_a_new_venv_if_existing_venv_is_incompatible(
 ) -> None:
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
 
+    mock_env = MockEnv(path=Path(tmpdir), is_venv=True, version_info=(1, 2, 3))
+    mocker.patch("poetry.utils.env.EnvManager.get", return_value=mock_env)
+
     bundler = VenvBundler()
     bundler.set_path(Path(tmpdir))
 
-    assert bundler.bundle(poetry, io)
+    marker_file = _create_venv_marker_file(tmpdir)
 
-    python_version = ".".join(str(v) for v in sys.version_info[:3])
+    assert marker_file.exists()
+    assert bundler.bundle(poetry, io)
+    assert not marker_file.exists()
+
     expected = f"""\
   • Bundling simple-project (1.2.3) into {tmpdir}
-  • Bundling simple-project (1.2.3) into {tmpdir}: Removing existing virtual environment
-  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Poetry-determined Python
+  • Bundling simple-project (1.2.3) into {tmpdir}: Replacing existing virtual environment due to incompatible Python version
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {tmpdir}
@@ -128,12 +139,16 @@ def test_bundler_should_use_an_existing_venv_if_compatible(
     bundler = VenvBundler()
     bundler.set_path(tmp_venv.path)
 
+    marker_file = _create_venv_marker_file(tmp_venv.path)
+
+    assert marker_file.exists()
     assert bundler.bundle(poetry, io)
+    assert marker_file.exists()
 
     path = str(tmp_venv.path)
     expected = f"""\
   • Bundling simple-project (1.2.3) into {path}
-  • Bundling simple-project (1.2.3) into {path}: Using existing virtual environment
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Poetry-determined Python
   • Bundling simple-project (1.2.3) into {path}: Installing dependencies
   • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {path}
@@ -150,14 +165,16 @@ def test_bundler_should_remove_an_existing_venv_if_forced(
     bundler.set_path(tmp_venv.path)
     bundler.set_remove(True)
 
+    marker_file = _create_venv_marker_file(tmp_venv.path)
+
+    assert marker_file.exists()
     assert bundler.bundle(poetry, io)
+    assert not marker_file.exists()
 
     path = str(tmp_venv.path)
-    python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
   • Bundling simple-project (1.2.3) into {path}
-  • Bundling simple-project (1.2.3) into {path}: Removing existing virtual environment
-  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Poetry-determined Python
   • Bundling simple-project (1.2.3) into {path}: Installing dependencies
   • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {path}
@@ -178,11 +195,9 @@ def test_bundler_should_fail_when_installation_fails(
 
     assert not bundler.bundle(poetry, io)
 
-    python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
   • Bundling simple-project (1.2.3) into {tmpdir}
-  • Bundling simple-project (1.2.3) into {tmpdir}: Removing existing virtual environment
-  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Poetry-determined Python
   • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
   • Bundling simple-project (1.2.3) into {tmpdir}: Failed at step Installing dependencies
 """
@@ -212,11 +227,9 @@ def test_bundler_should_display_a_warning_for_projects_with_no_module(
     assert bundler.bundle(poetry, io)
 
     path = str(tmp_venv.path)
-    python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
   • Bundling simple-project (1.2.3) into {path}
-  • Bundling simple-project (1.2.3) into {path}: Removing existing virtual environment
-  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Poetry-determined Python
   • Bundling simple-project (1.2.3) into {path}: Installing dependencies
   • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {path}
@@ -259,11 +272,9 @@ def test_bundler_can_filter_dependency_groups(
     assert bundler.bundle(poetry, io)
 
     path = tmpdir
-    python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
   • Bundling simple-project (1.2.3) into {path}
-  • Bundling simple-project (1.2.3) into {path}: Removing existing virtual environment
-  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Poetry-determined Python
   • Bundling simple-project (1.2.3) into {path}: Installing dependencies
   • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {path}
@@ -296,11 +307,9 @@ def test_bundler_passes_compile_flag(
     mocker.assert_called_once_with(compile)
 
     path = str(tmp_venv.path)
-    python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
   • Bundling simple-project (1.2.3) into {path}
-  • Bundling simple-project (1.2.3) into {path}: Removing existing virtual environment
-  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Poetry-determined Python
   • Bundling simple-project (1.2.3) into {path}: Installing dependencies
   • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {path}
@@ -327,11 +336,9 @@ def test_bundler_editable_deps(
     bundler.bundle(poetry, io)
 
     path = tmpdir
-    python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
   • Bundling simple-project (1.2.3) into {path}
-  • Bundling simple-project (1.2.3) into {path}: Removing existing virtual environment
-  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Poetry-determined Python
   • Bundling simple-project (1.2.3) into {path}: Installing dependencies
   • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {path}
