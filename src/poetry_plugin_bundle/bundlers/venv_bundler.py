@@ -62,7 +62,7 @@ class VenvBundler(Bundler):
         from poetry.packages.locker import Locker
         from poetry.utils.env import Env
         from poetry.utils.env import EnvManager
-        from poetry.utils.env.exceptions import InvalidCurrentPythonVersionError
+        from poetry.utils.env import InvalidCurrentPythonVersionError
 
         class CustomEnvManager(EnvManager):
             """
