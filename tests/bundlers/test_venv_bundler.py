@@ -307,11 +307,9 @@ def test_bundler_passes_compile_flag(
     mocker.assert_called_once_with(compile)
 
     path = str(tmp_venv.path)
-    python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
   • Bundling simple-project (1.2.3) into {path}
-  • Bundling simple-project (1.2.3) into {path}: Removing existing virtual environment
-  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Poetry-determined Python
   • Bundling simple-project (1.2.3) into {path}: Installing dependencies
   • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {path}
@@ -338,11 +336,9 @@ def test_bundler_editable_deps(
     bundler.bundle(poetry, io)
 
     path = tmpdir
-    python_version = ".".join(str(v) for v in sys.version_info[:3])
     expected = f"""\
   • Bundling simple-project (1.2.3) into {path}
-  • Bundling simple-project (1.2.3) into {path}: Removing existing virtual environment
-  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Poetry-determined Python
   • Bundling simple-project (1.2.3) into {path}: Installing dependencies
   • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
   • Bundled simple-project (1.2.3) into {path}
