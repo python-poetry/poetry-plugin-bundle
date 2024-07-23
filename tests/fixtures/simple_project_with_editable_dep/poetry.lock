@@ -1,0 +1,16 @@
+[metadata]
+content-hash = "4bf28231e477206338f6afc67df322e7b3601fdbf1d704521e1676a33603768b"
+python-versions = "~2.7 || ^3.4"
+
+[[package]]
+name = "bar"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "*"
+files = []
+develop = true
+
+[package.source]
+type = "directory"
+url = "bar"

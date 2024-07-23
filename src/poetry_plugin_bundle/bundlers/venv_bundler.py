@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from cleo.io.outputs.section_output import SectionOutput
     from poetry.core.constraints.version import Version
     from poetry.poetry import Poetry
+    from poetry.repositories.lockfile_repository import LockfileRepository
 
 
 class VenvBundler(Bundler):
@@ -57,6 +58,7 @@ class VenvBundler(Bundler):
         from poetry.core.packages.package import Package
         from poetry.installation.installer import Installer
         from poetry.installation.operations.install import Install
+        from poetry.packages.locker import Locker
         from poetry.utils.env import EnvManager
         from poetry.utils.env import SystemEnv
         from poetry.utils.env import VirtualEnv
@@ -118,11 +120,20 @@ class VenvBundler(Bundler):
 
         self._write(io, f"{message}: <info>Installing dependencies</info>")
 
+        class CustomLocker(Locker):
+            def locked_repository(self) -> LockfileRepository:
+                repo = super().locked_repository()
+                for package in repo.packages:
+                    package.develop = False
+                return repo
+
+        custom_locker = CustomLocker(poetry.locker.lock, poetry.local_config)
+
         installer = Installer(
             NullIO() if not io.is_debug() else io,
             env,
             poetry.package,
-            poetry.locker,
+            custom_locker,
             poetry.pool,
             poetry.config,
         )

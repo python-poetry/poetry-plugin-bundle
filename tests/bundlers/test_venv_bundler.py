@@ -12,6 +12,7 @@ from cleo.formatters.style import Style
 from cleo.io.buffered_io import BufferedIO
 from poetry.core.packages.package import Package
 from poetry.factory import Factory
+from poetry.installation.operations.install import Install
 from poetry.puzzle.exceptions import SolverProblemError
 from poetry.repositories.repository import Repository
 from poetry.repositories.repository_pool import RepositoryPool
@@ -268,3 +269,43 @@ def test_bundler_can_filter_dependency_groups(
   • Bundled simple-project (1.2.3) into {path}
 """
     assert expected == io.fetch_output()
+
+
+def test_bundler_editable_deps(
+    io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture, config: Config
+) -> None:
+    poetry = Factory().create_poetry(
+        Path(__file__).parent.parent / "fixtures" / "simple_project_with_editable_dep"
+    )
+    poetry.set_config(config)
+
+    install_spy = mocker.spy(Install, "__init__")
+    mocker.patch("poetry.installation.executor.Executor._execute_operation")
+
+    bundler = VenvBundler()
+    bundler.set_path(Path(tmpdir))
+
+    io.clear_output()
+
+    bundler.bundle(poetry, io)
+
+    path = tmpdir
+    python_version = ".".join(str(v) for v in sys.version_info[:3])
+    expected = f"""\
+  • Bundling simple-project (1.2.3) into {path}
+  • Bundling simple-project (1.2.3) into {path}: Removing existing virtual environment
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Python {python_version}
+  • Bundling simple-project (1.2.3) into {path}: Installing dependencies
+  • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
+  • Bundled simple-project (1.2.3) into {path}
+"""
+    assert expected == io.fetch_output()
+
+    installed_packages = [call.args[1] for call in install_spy.call_args_list]
+    dep_installs = list(
+        filter(lambda package: package.name == "bar", installed_packages)
+    )
+    assert len(dep_installs) > 0
+
+    editable_installs = list(filter(lambda package: package.develop, dep_installs))
+    assert len(editable_installs) == 0
