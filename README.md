@@ -46,7 +46,8 @@ will bundle the project in the `/path/to/environment` directory by creating the 
 installing the dependencies and the current project inside it. If the directory does not exist,
 it will be created automatically.
 
-By default, the command uses the current Python executable to build the virtual environment.
+By default, the command uses the same Python executable that Poetry would use
+when running `poetry install` to build the virtual environment.
 If you want to use a different one, you can specify it with the `--python/-p` option:
 
 ```bash
