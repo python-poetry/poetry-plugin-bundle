@@ -36,11 +36,11 @@ export = "poetry_plugin_bundle.plugin:BundleApplicationPlugin"
 
 [tool.ruff]
 fix = true
-unfixable = [
-    "ERA", # do not autoremove commented out code
-]
-target-version = "py38"
 line-length = 88
+src = ["src"]
+target-version = "py38"
+
+[tool.ruff.lint]
 extend-select = [
     "B",   # flake8-bugbear
     "C4",  # flake8-comprehensions
@@ -51,29 +51,28 @@ extend-select = [
     "PGH", # pygrep
     "RUF", # ruff checks
     "SIM", # flake8-simplify
+    "T20", # flake8-print
     "TCH", # flake8-type-checking
     "TID", # flake8-tidy-imports
     "UP",  # pyupgrade
 ]
-extend-exclude = [
-    # External to the project's coding standards
-    "tests/**/fixtures/*",
+extend-safe-fixes = [
+    "TCH", # move import from and to TYPE_CHECKING blocks
+]
+unfixable = [
+    "ERA", # do not autoremove commented out code
 ]
 
-[tool.ruff.flake8-tidy-imports]
+[tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 force-single-line = true
 lines-between-types = 1
 lines-after-imports = 2
 known-first-party = ["poetry_plugin_bundle"]
 required-imports = ["from __future__ import annotations"]
 
-
-[tool.black]
-target-version = ['py37']
-preview = true
 
 [tool.mypy]
 enable_error_code = [
