@@ -307,6 +307,7 @@ def test_bundler_passes_compile_flag(
 """
     assert expected == io.fetch_output()
 
+
 def test_bundler_editable_deps(
     io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture, config: Config
 ) -> None:
