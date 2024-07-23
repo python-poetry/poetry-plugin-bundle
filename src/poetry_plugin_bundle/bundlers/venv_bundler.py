@@ -66,10 +66,10 @@ class VenvBundler(Bundler):
 
         class CustomEnvManager(EnvManager):
             """
-            This class is used as an adapter for allowing us to use Poetry's EnvManager.create_venv but with
-            a custom path.
-            It works by hijacking the "in_project_venv" concept so that we can get that behavior, but with a custom
-            path.
+            This class is used as an adapter for allowing us to use
+            Poetry's EnvManager.create_venv but with a custom path.
+            It works by hijacking the "in_project_venv" concept so that
+            we can get that behavior, but with a custom path.
             """
 
             @property
@@ -105,7 +105,8 @@ class VenvBundler(Bundler):
         else:
             self._write(
                 io,
-                f"{message}: <info>Creating a virtual environment using Poetry-determined Python",
+                f"{message}: <info>Creating a virtual environment"
+                " using Poetry-determined Python",
             )
 
         try:
@@ -115,7 +116,8 @@ class VenvBundler(Bundler):
         except InvalidCurrentPythonVersionError:
             self._write(
                 io,
-                f"{message}: <info>Replacing existing virtual environment due to incompatible Python version</info>",
+                f"{message}: <info>Replacing existing virtual environment"
+                " due to incompatible Python version</info>",
             )
             env = manager.create_venv_at_path(
                 self._path, executable=executable, force=True
