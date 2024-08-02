@@ -79,6 +79,14 @@ class VenvBundler(Bundler):
             def use_in_project_venv(self) -> bool:
                 return True
 
+            def in_project_venv_exists(self) -> bool:
+                """
+                Coerce this call to always return True so that we avoid the path in the base
+                EnvManager.get that detects an existing env residing at the centralized Poetry
+                virtualenvs_path location.
+                """
+                return True
+
             def create_venv_at_path(
                 self, path: Path, executable: Path | None, force: bool
             ) -> Env:
