@@ -16,7 +16,9 @@ from poetry.installation.operations.install import Install
 from poetry.puzzle.exceptions import SolverProblemError
 from poetry.repositories.repository import Repository
 from poetry.repositories.repository_pool import RepositoryPool
-from poetry.utils.env import MockEnv, VirtualEnv, EnvManager
+from poetry.utils.env import EnvManager
+from poetry.utils.env import MockEnv
+from poetry.utils.env import VirtualEnv
 
 from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
@@ -355,7 +357,11 @@ def test_bundler_editable_deps(
 
 
 def test_bundler_should_build_a_venv_at_specified_path_if_centralized_venv_exists(
-    io: BufferedIO, tmpdir: str, tmp_venv: VirtualEnv, poetry: Poetry, mocker: MockerFixture
+    io: BufferedIO,
+    tmpdir: str,
+    tmp_venv: VirtualEnv,
+    poetry: Poetry,
+    mocker: MockerFixture,
 ) -> None:
     """
     Test coverage for [Issue #112](https://github.com/python-poetry/poetry-plugin-bundle/issues/112), which involves
@@ -368,7 +374,7 @@ def test_bundler_should_build_a_venv_at_specified_path_if_centralized_venv_exist
     poetry.config.config["virtualenvs"]["in-project"] = False
     poetry.config.config["virtualenvs"]["path"] = tmp_venv.path
 
-    env_manager  = EnvManager(poetry)
+    env_manager = EnvManager(poetry)
     python_version = tmp_venv.marker_env["python_version"]
     env_manager.activate(python_version)
 
