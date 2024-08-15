@@ -375,8 +375,7 @@ def test_bundler_should_build_a_venv_at_specified_path_if_centralized_venv_exist
     poetry.config.config["virtualenvs"]["path"] = tmp_venv.path
 
     env_manager = EnvManager(poetry)
-    python_version = str(tmp_venv.marker_env["version_info"][0])
-    env_manager.activate(python_version)
+    env_manager.activate(sys.executable)
 
     bundler_venv_path = Path(tmpdir) / "bundler"
     bundler = VenvBundler()
