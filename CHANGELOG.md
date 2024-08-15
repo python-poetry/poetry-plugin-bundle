@@ -1,6 +1,13 @@
 # Change Log
 
 
+## [1.4.1] - 2024-08-15
+
+### Fixed
+
+- Fix an issue where `path/to/venv` was ignored and an existing venv was used instead ([#114](https://github.com/python-poetry/poetry-plugin-bundle/pull/114)).
+
+
 ## [1.4.0] - 2024-07-26
 
 ### Added
@@ -44,7 +51,8 @@
 Initial version.
 
 
-[Unreleased]: https://github.com/python-poetry/poetry-plugin-bundle/compare/1.4.0...main
+[Unreleased]: https://github.com/python-poetry/poetry-plugin-bundle/compare/1.4.1...main
+[1.4.1]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.4.0
 [1.4.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.4.0
 [1.3.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.3.0
 [1.2.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.2.0
