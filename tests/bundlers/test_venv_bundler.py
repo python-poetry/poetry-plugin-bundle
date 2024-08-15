@@ -16,7 +16,9 @@ from poetry.installation.operations.install import Install
 from poetry.puzzle.exceptions import SolverProblemError
 from poetry.repositories.repository import Repository
 from poetry.repositories.repository_pool import RepositoryPool
+from poetry.utils.env import EnvManager
 from poetry.utils.env import MockEnv
+from poetry.utils.env import VirtualEnv
 
 from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
@@ -24,7 +26,6 @@ from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 if TYPE_CHECKING:
     from poetry.config.config import Config
     from poetry.poetry import Poetry
-    from poetry.utils.env import VirtualEnv
     from pytest_mock import MockerFixture
 
 
@@ -353,3 +354,44 @@ def test_bundler_editable_deps(
 
     editable_installs = list(filter(lambda package: package.develop, dep_installs))
     assert len(editable_installs) == 0
+
+
+def test_bundler_should_build_a_venv_at_specified_path_if_centralized_venv_exists(
+    io: BufferedIO,
+    tmpdir: str,
+    tmp_venv: VirtualEnv,
+    poetry: Poetry,
+    mocker: MockerFixture,
+) -> None:
+    """
+    Test coverage for [Issue #112](https://github.com/python-poetry/poetry-plugin-bundle/issues/112), which involves
+    a pre-existing "centralized" venv at the path specified in the Poetry configuration.
+    The test is intended to verify that the VenvBundler will build a new venv at the specified path if a centralized
+    venv already exists.
+    """
+    mocker.patch("poetry.installation.executor.Executor._execute_operation")
+
+    poetry.config.config["virtualenvs"]["in-project"] = False
+    poetry.config.config["virtualenvs"]["path"] = tmp_venv.path
+
+    env_manager = EnvManager(poetry)
+    env_manager.activate(sys.executable)
+
+    bundler_venv_path = Path(tmpdir) / "bundler"
+    bundler = VenvBundler()
+    bundler.set_path(bundler_venv_path)
+
+    assert bundler.bundle(poetry, io)
+
+    bundler_venv = VirtualEnv(bundler_venv_path)
+    assert bundler_venv.is_sane()
+
+    path = bundler_venv_path
+    expected = f"""\
+  • Bundling simple-project (1.2.3) into {path}
+  • Bundling simple-project (1.2.3) into {path}: Creating a virtual environment using Poetry-determined Python
+  • Bundling simple-project (1.2.3) into {path}: Installing dependencies
+  • Bundling simple-project (1.2.3) into {path}: Installing simple-project (1.2.3)
+  • Bundled simple-project (1.2.3) into {path}
+"""
+    assert expected == io.fetch_output()
