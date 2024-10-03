@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from cleo.io.outputs.section_output import SectionOutput
     from poetry.poetry import Poetry
     from poetry.repositories.lockfile_repository import LockfileRepository
+    from poetry.utils.env import Env
 
 
 class VenvBundler(Bundler):
@@ -137,6 +138,9 @@ class VenvBundler(Bundler):
                 self._path, executable=executable, force=True
             )
 
+        if self._platform:
+            self.constrain_env_platform(env)
+
         self._write(io, f"{message}: <info>Installing dependencies</info>")
 
         class CustomLocker(Locker):
@@ -147,12 +151,6 @@ class VenvBundler(Bundler):
                 return repo
 
         custom_locker = CustomLocker(poetry.locker.lock, poetry.local_config)
-
-
-        if self._platform:
-            platforms_to_keep = set(["any", self._platform])
-            new_supported_tags = [tag for tag in env.supported_tags if tag.platform in platforms_to_keep]
-            env._supported_tags = new_supported_tags
 
         installer = Installer(
             NullIO() if not io.is_debug() else io,
@@ -240,3 +238,17 @@ class VenvBundler(Bundler):
             return
 
         io.overwrite(message)
+
+    def constrain_env_platform(self, env: Env) -> None:
+        """
+        TODO BW DOCME
+        """
+        from packaging.tags import Tag
+
+        replacement_tags: dict[Tag, Tag] = {}
+        for tag in env.supported_tags:
+            replacement_tag = tag if tag.platform == "any" else Tag(tag.interpreter, tag.abi, self._platform)
+            if replacement_tag not in replacement_tags:
+                replacement_tags[replacement_tag] = replacement_tag
+
+        env._supported_tags = list(replacement_tags.values())
