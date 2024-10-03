@@ -23,6 +23,7 @@ class VenvBundler(Bundler):
         self._remove: bool = False
         self._activated_groups: set[str] | None = None
         self._compile: bool = False
+        self._platform: str | None = None
 
     def set_path(self, path: Path) -> VenvBundler:
         self._path = path
@@ -46,6 +47,11 @@ class VenvBundler(Bundler):
 
     def set_compile(self, compile: bool = False) -> VenvBundler:
         self._compile = compile
+
+        return self
+
+    def set_platform(self, platform: str | None) -> VenvBundler:
+        self._platform = platform
 
         return self
 
@@ -141,6 +147,12 @@ class VenvBundler(Bundler):
                 return repo
 
         custom_locker = CustomLocker(poetry.locker.lock, poetry.local_config)
+
+
+        if self._platform:
+            platforms_to_keep = set(["any", self._platform])
+            new_supported_tags = [tag for tag in env.supported_tags if tag.platform in platforms_to_keep]
+            env._supported_tags = new_supported_tags
 
         installer = Installer(
             NullIO() if not io.is_debug() else io,

@@ -45,6 +45,13 @@ class BundleVenvCommand(BundleCommand):
             " because the old installer always compiles.)",
             flag=True,
         ),
+        option(
+            "platform",
+            None,
+            "TODO BW DOCME",
+            flag=False,
+            value_required=True,
+        ),
     ]
 
     bundler_name = "venv"
@@ -54,4 +61,5 @@ class BundleVenvCommand(BundleCommand):
         bundler.set_executable(self.option("python"))
         bundler.set_remove(self.option("clear"))
         bundler.set_compile(self.option("compile"))
+        bundler.set_platform(self.option("platform"))
         bundler.set_activated_groups(self.activated_groups)
