@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "project-with-binary-wheel"
+version = "0.1.0"
+description = ""
+authors = ["BrandonLWhite <brandonlwhite@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+cryptography = "^43.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -67,7 +67,6 @@ class VenvBundler(Bundler):
         from poetry.installation.installer import Installer
         from poetry.installation.operations.install import Install
         from poetry.packages.locker import Locker
-        from poetry.utils.env import Env
         from poetry.utils.env import EnvManager
         from poetry.utils.env import InvalidCurrentPythonVersionError
 
@@ -242,13 +241,93 @@ class VenvBundler(Bundler):
     def constrain_env_platform(self, env: Env) -> None:
         """
         TODO BW DOCME
+        This isn't quite achieving what I want.  It is causing earlier but compatible platforms to be discarded.
+        I need to be able to somehow generate all of the earlier compatible platforms starting from the specified
+        platform.
+        The key is in .venv/lib/python3.11/site-packages/packaging/tags.py
+        It starts with sys_tags()
+        Is there a way I can query for compatibility?
+
+        yield from _manylinux.platform_tags(archs)
+
+        Idea: Use the poetry.lock file to build a list of all the tags and then filter down
+              based on the argument platform.  Nah, that will break with the manylinux value wonkiness.
+
+        See src/pip/_internal/utils/compatibility_tags.py
+            _custom_manylinux_platforms
+            _expand_allowed_platforms
+
+        Wait, how does Poetry parse the wheel filenames to determine if it is compatible?
+        These involve ambiguous underscore values like "manylinux_2_28_x86_64"
+        Check out the poetry Wheel class.  it might be helpful.
         """
-        from packaging.tags import Tag
 
-        replacement_tags: dict[Tag, Tag] = {}
-        for tag in env.supported_tags:
-            replacement_tag = tag if tag.platform == "any" else Tag(tag.interpreter, tag.abi, self._platform)
-            if replacement_tag not in replacement_tags:
-                replacement_tags[replacement_tag] = replacement_tag
+        # TODO BW: Dynamically generate the interpreter and max python version.
+        env._supported_tags = create_supported_tags(platform=self._platform, interpreter="cp39", max_python_version=(3,9))
 
-        env._supported_tags = list(replacement_tags.values())
+if TYPE_CHECKING:
+    from packaging.tags import Tag
+
+
+def create_supported_tags(platform: str, interpreter: str, max_python_version: tuple[int]) -> list[Tag]:
+    """
+    """
+    from packaging.tags import cpython_tags, compatible_tags
+
+    if platform.startswith("manylinux"):
+        supported_platforms = create_supported_manylinux_platforms(platform)
+    elif platform.startswith("musllinux"):
+        raise NotImplementedError(f"Platform {platform} not supported")
+    elif platform.startswith("macosx"):
+        raise NotImplementedError(f"Platform {platform} not supported")
+    else:
+        raise NotImplementedError(f"Platform {platform} not supported")
+
+    tags = list(cpython_tags(python_version=max_python_version, platforms=supported_platforms))
+
+    tags.extend(compatible_tags(interpreter=interpreter, python_version=max_python_version, platforms=supported_platforms))
+
+    return tags
+
+
+def create_supported_manylinux_platforms(platform: str) -> list[str]:
+    """
+    https://peps.python.org/pep-0600/
+    manylinux_${GLIBCMAJOR}_${GLIBCMINOR}_${ARCH}
+
+    For now, only GLIBCMAJOR "2" is supported.  It is unclear if there will be a need to support a future major
+    version like "3" and if specified, how generate the compatible 2.x version tags.
+    """
+    import re
+
+    # Implementation based on https://peps.python.org/pep-0600/#package-installers
+
+    tag = normalize_legacy_manylinux_alias(platform)
+    match = re.match("manylinux_([0-9]+)_([0-9]+)_(.*)", tag)
+    if not match:
+        raise ValueError(f"Invalid manylinux tag: {tag}")
+    tag_major_str, tag_minor_str, tag_arch = match.groups()
+    tag_major_max = int(tag_major_str)
+    tag_minor_max = int(tag_minor_str)
+
+    return [
+        f"manylinux_{tag_major_max}_{tag_minor}_{tag_arch}"
+        for tag_minor in range(tag_minor_max, -1, -1)
+    ]
+
+
+LEGACY_MANYLINUX_ALIASES = {
+    "manylinux1": "manylinux_2_5",
+    "manylinux2010": "manylinux_2_12",
+    "manylinux2014": "manylinux_2_17",
+}
+
+def normalize_legacy_manylinux_alias(tag: str) -> str:
+    tag_os_index_end = tag.index("_")
+    tag_os = tag[:tag_os_index_end]
+    tag_arch_suffix = tag[tag_os_index_end:]
+    os_replacement = LEGACY_MANYLINUX_ALIASES.get(tag_os)
+    if not os_replacement:
+        return tag
+
+    return os_replacement + tag_arch_suffix

@@ -25,6 +25,7 @@ from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
 if TYPE_CHECKING:
     from poetry.config.config import Config
+    from poetry.core.packages.utils.link import Link
     from poetry.poetry import Poetry
     from pytest_mock import MockerFixture
 
@@ -395,3 +396,49 @@ def test_bundler_should_build_a_venv_at_specified_path_if_centralized_venv_exist
   • Bundled simple-project (1.2.3) into {path}
 """
     assert expected == io.fetch_output()
+
+
+def test_bundler_platform_override(
+    io: BufferedIO, tmpdir: str, mocker: MockerFixture, config: Config
+) -> None:
+    poetry = Factory().create_poetry(
+        Path(__file__).parent.parent / "fixtures" / "project_with_binary_wheel"
+    )
+    poetry.set_config(config)
+
+    # TODO BW: I need to patch poetry.installation.chooser.Chooser._get_links   (package: Package) -> list[Link]:
+    mocker.patch("poetry.installation.executor.Executor._execute_uninstall")
+    mocker.patch("poetry.installation.executor.Executor._execute_update")
+    mock_download_link = mocker.patch("poetry.installation.executor.Executor._download_link")
+    mocker.patch("poetry.installation.wheel_installer.WheelInstaller.install")
+
+    def get_installed_links() -> dict[str, str]:
+        return {
+            call[0][0].package.name: call[0][1].filename
+            for call in mock_download_link.call_args_list
+        }
+
+
+    bundler = VenvBundler()
+    bundler.set_path(Path(tmpdir))
+    bundler.set_remove(True)
+
+    bundler.set_platform("manylinux_2_28_x86_64")
+    bundler.bundle(poetry, io)
+
+    installed_link_by_package = get_installed_links()
+    assert "manylinux_2_28_x86_64" in installed_link_by_package["cryptography"]
+    assert "manylinux_2_17_x86_64" in installed_link_by_package["cffi"]
+    assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
+
+    bundler.set_platform("manylinux2014_x86_64")
+    bundler.bundle(poetry, io)
+    installed_link_by_package = get_installed_links()
+    assert "manylinux2014_x86_64" in installed_link_by_package["cryptography"]
+    assert "manylinux_2_17_x86_64" in installed_link_by_package["cffi"]
+    assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
+
+    # bundler.set_platform("macosx_10_9")
+    # bundler.bundle(poetry, io)
+    # installed_link_by_package = get_installed_links()
+    # assert "macosx_10_9_x86_64" in installed_link_by_package["cryptography"]
