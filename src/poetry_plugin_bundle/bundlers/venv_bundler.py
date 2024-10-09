@@ -277,7 +277,7 @@ def create_supported_tags(platform: str, interpreter: str, max_python_version: t
     if platform.startswith("manylinux"):
         supported_platforms = create_supported_manylinux_platforms(platform)
     elif platform.startswith("musllinux"):
-        raise NotImplementedError(f"Platform {platform} not supported")
+        supported_platforms = create_supported_musllinux_platforms(platform)
     elif platform.startswith("macosx"):
         supported_platforms = create_supported_macosx_platforms(platform)
     else:
@@ -344,3 +344,18 @@ def create_supported_macosx_platforms(platform: str) -> list[str]:
     tag_minor_max = int(tag_minor_str)
 
     return list(mac_platforms(version=(tag_major_max,tag_minor_max), arch=tag_arch))
+
+
+def create_supported_musllinux_platforms(platform: str) -> list[str]:
+    import re
+    match = re.match("musllinux_([0-9]+)_([0-9]+)_(.*)", platform)
+    if not match:
+        raise ValueError(f"Invalid musllinux tag: {platform}")
+    tag_major_str, tag_minor_str, tag_arch = match.groups()
+    tag_major_max = int(tag_major_str)
+    tag_minor_max = int(tag_minor_str)
+
+    return [
+        f"musllinux_{tag_major_max}_{minor}_{tag_arch}"
+        for minor in range(tag_minor_max, -1, -1)
+    ]

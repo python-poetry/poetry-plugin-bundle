@@ -11,6 +11,7 @@ import pytest
 from cleo.formatters.style import Style
 from cleo.io.buffered_io import BufferedIO
 from poetry.core.packages.package import Package
+from poetry.core.packages.utils.link import Link
 from poetry.factory import Factory
 from poetry.installation.operations.install import Install
 from poetry.puzzle.exceptions import SolverProblemError
@@ -25,7 +26,6 @@ from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
 if TYPE_CHECKING:
     from poetry.config.config import Config
-    from poetry.core.packages.utils.link import Link
     from poetry.poetry import Poetry
     from pytest_mock import MockerFixture
 
@@ -406,7 +406,13 @@ def test_bundler_platform_override(
     )
     poetry.set_config(config)
 
-    # TODO BW: I need to patch poetry.installation.chooser.Chooser._get_links   (package: Package) -> list[Link]:
+    def get_links_fake(package: Package) -> list[Link]:
+        return [
+            Link(f"https://example.com/{file['file']}")
+            for file in package.files
+        ]
+
+    mocker.patch("poetry.installation.chooser.Chooser._get_links", side_effect=get_links_fake)
     mocker.patch("poetry.installation.executor.Executor._execute_uninstall")
     mocker.patch("poetry.installation.executor.Executor._execute_update")
     mock_download_link = mocker.patch("poetry.installation.executor.Executor._download_link")
@@ -449,4 +455,11 @@ def test_bundler_platform_override(
     installed_link_by_package = get_installed_links()
     assert "macosx_10_9_universal2" in installed_link_by_package["cryptography"]
     assert "macosx_11_0_arm64" in installed_link_by_package["cffi"]
+    assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
+
+    bundler.set_platform("musllinux_1_2_aarch64")
+    bundler.bundle(poetry, io)
+    installed_link_by_package = get_installed_links()
+    assert "musllinux_1_2_aarch64" in installed_link_by_package["cryptography"]
+    assert "musllinux_1_1_aarch64" in installed_link_by_package["cffi"]
     assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
