@@ -279,7 +279,7 @@ def create_supported_tags(platform: str, interpreter: str, max_python_version: t
     elif platform.startswith("musllinux"):
         raise NotImplementedError(f"Platform {platform} not supported")
     elif platform.startswith("macosx"):
-        raise NotImplementedError(f"Platform {platform} not supported")
+        supported_platforms = create_supported_macosx_platforms(platform)
     else:
         raise NotImplementedError(f"Platform {platform} not supported")
 
@@ -331,3 +331,16 @@ def normalize_legacy_manylinux_alias(tag: str) -> str:
         return tag
 
     return os_replacement + tag_arch_suffix
+
+
+def create_supported_macosx_platforms(platform: str) -> list[str]:
+    import re
+    from packaging.tags import mac_platforms
+    match = re.match("macosx_([0-9]+)_([0-9]+)_(.*)", platform)
+    if not match:
+        raise ValueError(f"Invalid macosx tag: {platform}")
+    tag_major_str, tag_minor_str, tag_arch = match.groups()
+    tag_major_max = int(tag_major_str)
+    tag_minor_max = int(tag_minor_str)
+
+    return list(mac_platforms(version=(tag_major_max,tag_minor_max), arch=tag_arch))
