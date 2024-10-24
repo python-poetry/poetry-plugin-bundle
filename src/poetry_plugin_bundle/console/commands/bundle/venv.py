@@ -48,7 +48,7 @@ class BundleVenvCommand(BundleCommand):
         option(
             "platform",
             None,
-            "TODO BW DOCME",
+            "Only use wheels compatible with the specified platform. Defaults to the platform of the running system.",
             flag=False,
             value_required=True,
         ),

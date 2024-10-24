@@ -240,9 +240,7 @@ class VenvBundler(Bundler):
 
     def constrain_env_platform(self, env: Env) -> None:
         """
-        TODO BW DOCME
+        Set the argument environment's supported tags based on the configured platform override.
         """
         from .utils.platforms import create_supported_tags
-        # TODO BW: Dynamically generate the interpreter and max python version.
-        # TODO BW: Mutate the env object from within create_supported_tags (introduce a new function named override_supported_tags)
         env._supported_tags = create_supported_tags(self._platform, env)
