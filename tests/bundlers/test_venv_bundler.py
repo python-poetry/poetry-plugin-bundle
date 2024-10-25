@@ -431,7 +431,6 @@ def test_bundler_platform_override(
 
     bundler.set_platform("manylinux_2_28_x86_64")
     bundler.bundle(poetry, io)
-
     installed_link_by_package = get_installed_links()
     assert "manylinux_2_28_x86_64" in installed_link_by_package["cryptography"]
     assert "manylinux_2_17_x86_64" in installed_link_by_package["cffi"]
@@ -455,12 +454,14 @@ def test_bundler_platform_override(
     bundler.bundle(poetry, io)
     installed_link_by_package = get_installed_links()
     assert "macosx_10_9_universal2" in installed_link_by_package["cryptography"]
-    assert "macosx_11_0_arm64" in installed_link_by_package["cffi"]
+    expected_cffi_platform = "macosx_11_0_arm64" if sys.version_info >= (3, 9) else "cffi-1.17.1.tar.gz"
+    assert expected_cffi_platform in installed_link_by_package["cffi"]
     assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
 
     bundler.set_platform("musllinux_1_2_aarch64")
     bundler.bundle(poetry, io)
     installed_link_by_package = get_installed_links()
     assert "musllinux_1_2_aarch64" in installed_link_by_package["cryptography"]
-    assert "musllinux_1_1_aarch64" in installed_link_by_package["cffi"]
+    expected_cffi_platform = "musllinux_1_1_aarch64" if sys.version_info >= (3, 9) else "cffi-1.17.1.tar.gz"
+    assert expected_cffi_platform in installed_link_by_package["cffi"]
     assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
