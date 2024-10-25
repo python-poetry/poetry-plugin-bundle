@@ -33,7 +33,7 @@ class PlatformTagParseResult:
 
     def to_tag(self) -> str:
         return "_".join(
-            [self.platform, self.version_major, self.version_minor, self.arch]
+            [self.platform, str(self.version_major), str(self.version_minor), self.arch]
         )
 
 
