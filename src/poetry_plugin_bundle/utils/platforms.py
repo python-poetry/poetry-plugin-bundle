@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -18,6 +19,7 @@ class PlatformTagParseResult:
     @staticmethod
     def parse(tag: str) -> PlatformTagParseResult:
         import re
+
         match = re.match("([a-z]+)_([0-9]+)_([0-9]+)_(.*)", tag)
         if not match:
             raise ValueError(f"Invalid platform tag: {tag}")
@@ -26,17 +28,27 @@ class PlatformTagParseResult:
             platform=platform,
             version_major=int(version_major_str),
             version_minor=int(version_minor_str),
-            arch=arch
+            arch=arch,
         )
 
     def to_tag(self) -> str:
-        return "_".join([self.platform, self.version_major, self.version_minor, self.arch])
+        return "_".join(
+            [self.platform, self.version_major, self.version_minor, self.arch]
+        )
 
 
 def create_supported_tags(platform: str, env: Env) -> list[Tag]:
     """
+    Given a platform specifier string, generate a list of compatible tags for the argument environment's interpreter.
+
+    Refer to:
+        https://packaging.python.org/en/latest/specifications/platform-compatibility-tags/#platform-tag
+        https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-platform
     """
-    from packaging.tags import cpython_tags, compatible_tags, generic_tags, INTERPRETER_SHORT_NAMES
+    from packaging.tags import INTERPRETER_SHORT_NAMES
+    from packaging.tags import compatible_tags
+    from packaging.tags import cpython_tags
+    from packaging.tags import generic_tags
 
     if platform.startswith("manylinux"):
         supported_platforms = create_supported_manylinux_platforms(platform)
@@ -48,17 +60,31 @@ def create_supported_tags(platform: str, env: Env) -> list[Tag]:
         raise NotImplementedError(f"Platform {platform} not supported")
 
     python_implementation = env.python_implementation.lower()
-    python_version=env.version_info[:2]
-    interpreter_name = INTERPRETER_SHORT_NAMES.get(python_implementation, python_implementation)
+    python_version = env.version_info[:2]
+    interpreter_name = INTERPRETER_SHORT_NAMES.get(
+        python_implementation, python_implementation
+    )
     interpreter = None
 
     if interpreter_name == "cp":
-        tags = list(cpython_tags(python_version=python_version, platforms=supported_platforms))
+        tags = list(
+            cpython_tags(python_version=python_version, platforms=supported_platforms)
+        )
         interpreter = f"{interpreter_name}{python_version[0]}{python_version[1]}"
     else:
-        tags = list(generic_tags(interpreter=interpreter, abis = [], platforms=supported_platforms))
+        tags = list(
+            generic_tags(
+                interpreter=interpreter, abis=[], platforms=supported_platforms
+            )
+        )
 
-    tags.extend(compatible_tags(interpreter=interpreter, python_version=python_version, platforms=supported_platforms))
+    tags.extend(
+        compatible_tags(
+            interpreter=interpreter,
+            python_version=python_version,
+            platforms=supported_platforms,
+        )
+    )
 
     return tags
 
@@ -71,8 +97,6 @@ def create_supported_manylinux_platforms(platform: str) -> list[str]:
     For now, only GLIBCMAJOR "2" is supported.  It is unclear if there will be a need to support a future major
     version like "3" and if specified, how generate the compatible 2.x version tags.
     """
-    import re
-
     # Implementation based on https://peps.python.org/pep-0600/#package-installers
 
     tag = normalize_legacy_manylinux_alias(platform)
@@ -104,7 +128,9 @@ def normalize_legacy_manylinux_alias(tag: str) -> str:
 
 def create_supported_macosx_platforms(platform: str) -> list[str]:
     import re
+
     from packaging.tags import mac_platforms
+
     match = re.match("macosx_([0-9]+)_([0-9]+)_(.*)", platform)
     if not match:
         raise ValueError(f"Invalid macosx tag: {platform}")
@@ -112,11 +138,12 @@ def create_supported_macosx_platforms(platform: str) -> list[str]:
     tag_major_max = int(tag_major_str)
     tag_minor_max = int(tag_minor_str)
 
-    return list(mac_platforms(version=(tag_major_max,tag_minor_max), arch=tag_arch))
+    return list(mac_platforms(version=(tag_major_max, tag_minor_max), arch=tag_arch))
 
 
 def create_supported_musllinux_platforms(platform: str) -> list[str]:
     import re
+
     match = re.match("musllinux_([0-9]+)_([0-9]+)_(.*)", platform)
     if not match:
         raise ValueError(f"Invalid musllinux tag: {platform}")

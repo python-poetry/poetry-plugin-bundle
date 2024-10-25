@@ -242,5 +242,6 @@ class VenvBundler(Bundler):
         """
         Set the argument environment's supported tags based on the configured platform override.
         """
-        from .utils.platforms import create_supported_tags
+        from poetry_plugin_bundle.utils.platforms import create_supported_tags
+
         env._supported_tags = create_supported_tags(self._platform, env)

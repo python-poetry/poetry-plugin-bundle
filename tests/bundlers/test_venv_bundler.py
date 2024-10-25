@@ -407,15 +407,16 @@ def test_bundler_platform_override(
     poetry.set_config(config)
 
     def get_links_fake(package: Package) -> list[Link]:
-        return [
-            Link(f"https://example.com/{file['file']}")
-            for file in package.files
-        ]
+        return [Link(f"https://example.com/{file['file']}") for file in package.files]
 
-    mocker.patch("poetry.installation.chooser.Chooser._get_links", side_effect=get_links_fake)
+    mocker.patch(
+        "poetry.installation.chooser.Chooser._get_links", side_effect=get_links_fake
+    )
     mocker.patch("poetry.installation.executor.Executor._execute_uninstall")
     mocker.patch("poetry.installation.executor.Executor._execute_update")
-    mock_download_link = mocker.patch("poetry.installation.executor.Executor._download_link")
+    mock_download_link = mocker.patch(
+        "poetry.installation.executor.Executor._download_link"
+    )
     mocker.patch("poetry.installation.wheel_installer.WheelInstaller.install")
 
     def get_installed_links() -> dict[str, str]:

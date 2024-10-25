@@ -48,7 +48,8 @@ class BundleVenvCommand(BundleCommand):
         option(
             "platform",
             None,
-            "Only use wheels compatible with the specified platform. Defaults to the platform of the running system.",
+            "Only use wheels compatible with the specified platform. Otherwise the default behavior uses the platform "
+            " of the running system.",
             flag=False,
             value_required=True,
         ),
