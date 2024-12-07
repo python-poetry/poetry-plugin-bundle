@@ -169,7 +169,8 @@ class VenvBundler(Bundler):
         if hasattr(poetry, "is_package_mode") and not poetry.is_package_mode:
             self._write(
                 io,
-                f"{message}: <info>Skipping installation for non package project <c1>{poetry.package.pretty_name}</c1>",
+                f"{message}: <info>Skipping installation for non package project"
+                f" <c1>{poetry.package.pretty_name}</c1>",
             )
         else:
             self._write(
