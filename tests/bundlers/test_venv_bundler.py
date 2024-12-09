@@ -398,6 +398,19 @@ def test_bundler_should_build_a_venv_at_specified_path_if_centralized_venv_exist
     assert expected == io.fetch_output()
 
 
+def test_bundler_non_package_mode(
+    io: BufferedIO, tmp_venv: VirtualEnv, mocker: MockerFixture, config: Config
+) -> None:
+    poetry = Factory().create_poetry(
+        Path(__file__).parent.parent / "fixtures" / "non_package_mode"
+    )
+    poetry.set_config(config)
+
+) -> None:
+    poetry = Factory().create_poetry(
+    )
+    poetry.set_config(config)
+
 def test_bundler_platform_override(
     io: BufferedIO, tmpdir: str, mocker: MockerFixture, config: Config
 ) -> None:

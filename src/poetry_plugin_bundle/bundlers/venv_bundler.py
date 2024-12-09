@@ -174,30 +174,38 @@ class VenvBundler(Bundler):
             )
             return False
 
-        self._write(
-            io,
-            f"{message}: <info>Installing <c1>{poetry.package.pretty_name}</c1>"
-            f" (<b>{poetry.package.pretty_version}</b>)</info>",
-        )
+        # Skip building the wheel if is_package_mode exists and is set to false
+        if hasattr(poetry, "is_package_mode") and not poetry.is_package_mode:
+            self._write(
+                io,
+                f"{message}: <info>Skipping installation for non package project"
+                f" <c1>{poetry.package.pretty_name}</c1>",
+            )
+        else:
+            self._write(
+                io,
+                f"{message}: <info>Installing <c1>{poetry.package.pretty_name}</c1>"
+                f" (<b>{poetry.package.pretty_version}</b>)</info>",
+            )
 
-        # Build a wheel of the project in a temporary directory
-        # and install it in the newly create virtual environment
-        with TemporaryDirectory() as directory:
-            try:
-                wheel_name = WheelBuilder.make_in(poetry, directory=Path(directory))
-                wheel = Path(directory).joinpath(wheel_name)
-                package = Package(
-                    poetry.package.name,
-                    poetry.package.version,
-                    source_type="file",
-                    source_url=str(wheel),
-                )
-                installer.executor.execute([Install(package)])
-            except ModuleOrPackageNotFound:
-                warnings.append(
-                    "The root package was not installed because no matching module or"
-                    " package was found."
-                )
+            # Build a wheel of the project in a temporary directory
+            # and install it in the newly create virtual environment
+            with TemporaryDirectory() as directory:
+                try:
+                    wheel_name = WheelBuilder.make_in(poetry, directory=Path(directory))
+                    wheel = Path(directory).joinpath(wheel_name)
+                    package = Package(
+                        poetry.package.name,
+                        poetry.package.version,
+                        source_type="file",
+                        source_url=str(wheel),
+                    )
+                    installer.executor.execute([Install(package)])
+                except ModuleOrPackageNotFound:
+                    warnings.append(
+                        "The root package was not installed because no matching module or"
+                        " package was found."
+                    )
 
         self._write(io, self._get_message(poetry, self._path, done=True))
 
