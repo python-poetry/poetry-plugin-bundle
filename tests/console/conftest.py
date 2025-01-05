@@ -28,10 +28,10 @@ def poetry(project_directory: str, config: Config) -> Poetry:
         Path(__file__).parent.parent / "fixtures" / project_directory
     )
     try:
-        locker_data = p.locker._pyproject_data  # type: ignore[attr-defined]
+        locker_data = p.locker._pyproject_data
     except AttributeError:
         # poetry < 2.0
-        locker_data = p.locker._local_config
+        locker_data = p.locker._local_config  # type: ignore[attr-defined]
     p.set_locker(TestLocker(p.locker.lock, locker_data))
 
     return p

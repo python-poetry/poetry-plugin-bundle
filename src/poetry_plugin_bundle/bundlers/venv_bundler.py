@@ -57,12 +57,10 @@ class VenvBundler(Bundler):
         from poetry.core.masonry.builders.wheel import WheelBuilder
 
         try:
-            from poetry.core.masonry.utils.module import (  # type: ignore[attr-defined]
-                ModuleOrPackageNotFoundError,
-            )
+            from poetry.core.masonry.utils.module import ModuleOrPackageNotFoundError
         except ImportError:
             # poetry-core < 2.0
-            from poetry.core.masonry.utils.module import (
+            from poetry.core.masonry.utils.module import (  # type: ignore[attr-defined, no-redef]
                 ModuleOrPackageNotFound as ModuleOrPackageNotFoundError,
             )
         from poetry.core.packages.package import Package
@@ -150,10 +148,10 @@ class VenvBundler(Bundler):
                 return repo
 
         try:
-            locker_data = poetry.locker._pyproject_data  # type: ignore[attr-defined]
+            locker_data = poetry.locker._pyproject_data
         except AttributeError:
             # poetry < 2.0
-            locker_data = poetry.locker._local_config
+            locker_data = poetry.locker._local_config  # type: ignore[attr-defined]
         custom_locker = CustomLocker(poetry.locker.lock, locker_data)
 
         installer = Installer(
