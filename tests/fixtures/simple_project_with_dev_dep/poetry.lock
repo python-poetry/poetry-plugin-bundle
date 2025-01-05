@@ -7,6 +7,7 @@ python-versions = "*"
 version = "1.0.0"
 
 [metadata]
+lock-version = "1.0"
 content-hash = "84d6d2a62597932428c63eb32553bbd5b803651a1878365bd33d0df15f741c44"
 python-versions = "~2.7 || ^3.4"
 
