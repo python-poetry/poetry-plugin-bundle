@@ -406,10 +406,24 @@ def test_bundler_non_package_mode(
     )
     poetry.set_config(config)
 
-) -> None:
-    poetry = Factory().create_poetry(
-    )
-    poetry.set_config(config)
+    mocker.patch("poetry.installation.executor.Executor._execute_operation")
+
+    bundler = VenvBundler()
+    bundler.set_path(tmp_venv.path)
+    bundler.set_remove(True)
+
+    assert bundler.bundle(poetry, io)
+
+    path = str(tmp_venv.path)
+    expected = f"""\
+  • Bundling simple-project-non-package-mode (1.2.3) into {path}
+  • Bundling simple-project-non-package-mode (1.2.3) into {path}: Creating a virtual environment using Poetry-determined Python
+  • Bundling simple-project-non-package-mode (1.2.3) into {path}: Installing dependencies
+  • Bundling simple-project-non-package-mode (1.2.3) into {path}: Skipping installation for non package project simple-project-non-package-mode
+  • Bundled simple-project-non-package-mode (1.2.3) into {path}
+"""
+    assert expected == io.fetch_output()
+
 
 def test_bundler_platform_override(
     io: BufferedIO, tmpdir: str, mocker: MockerFixture, config: Config
