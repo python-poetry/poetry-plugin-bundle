@@ -1,6 +1,18 @@
 # Change Log
 
 
+## [1.5.0] - 2024-01-05
+
+### Added
+
+- Ensure compatiblity with Poetry 2.0 ([#128](https://github.com/python-poetry/poetry-plugin-bundle/pull/128)).
+- Add support for projects with `package-mode = false` ([#119](https://github.com/python-poetry/poetry-plugin-bundle/pull/119)).
+
+### Changed
+
+- Drop support for Python 3.8 ([#127](https://github.com/python-poetry/poetry-plugin-bundle/pull/127)).
+
+
 ## [1.4.1] - 2024-08-15
 
 ### Fixed
@@ -51,8 +63,9 @@
 Initial version.
 
 
-[Unreleased]: https://github.com/python-poetry/poetry-plugin-bundle/compare/1.4.1...main
-[1.4.1]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.4.0
+[Unreleased]: https://github.com/python-poetry/poetry-plugin-bundle/compare/1.5.0...main
+[1.5.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.5.0
+[1.4.1]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.4.1
 [1.4.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.4.0
 [1.3.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.3.0
 [1.2.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.2.0
