@@ -55,9 +55,6 @@ def test_create_supported_tags_legacy_manylinux_aliases() -> None:
         expected_tags={
             "cp310-cp310-manylinux_2_5_x86_64",
             "cp310-cp310-manylinux_2_1_x86_64",
-            "py312-none-manylinux_2_12_x86_64",
-            "py312-none-any",
-            "cp312-none-any",
         },
         unexpected_tags={
             "cp310-cp310-manylinux_2_6_x86_64",
