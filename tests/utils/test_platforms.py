@@ -20,14 +20,14 @@ def _test_create_supported_tags(
     python_version_info: tuple[int, int, int],
     expected_tags: set[str],
     unexpected_tags: set[str],
-):
+) -> None:
     result_set = _get_supported_tags_set(platform, python_version_info)
 
     assert result_set.issuperset(expected_tags)
     assert not result_set.intersection(unexpected_tags)
 
 
-def test_create_supported_tags_manylinux():
+def test_create_supported_tags_manylinux() -> None:
     _test_create_supported_tags(
         platform="manylinux_2_12_x86_64",
         python_version_info=(3, 12, 1),
@@ -48,7 +48,7 @@ def test_create_supported_tags_manylinux():
     )
 
 
-def test_create_supported_tags_legacy_manylinux_aliases():
+def test_create_supported_tags_legacy_manylinux_aliases() -> None:
     _test_create_supported_tags(
         platform="manylinux1_x86_64",
         python_version_info=(3, 10, 2),
@@ -89,7 +89,7 @@ def test_create_supported_tags_legacy_manylinux_aliases():
     )
 
 
-def test_create_supported_tags_macosx():
+def test_create_supported_tags_macosx() -> None:
     _test_create_supported_tags(
         platform="macosx_11_0_arm64",
         python_version_info=(3, 11, 8),
@@ -121,7 +121,7 @@ def test_create_supported_tags_macosx():
     )
 
 
-def test_create_supported_tags_musllinux():
+def test_create_supported_tags_musllinux() -> None:
     _test_create_supported_tags(
         platform="musllinux_1_1_x86_64",
         python_version_info=(3, 13, 1),
@@ -137,7 +137,7 @@ def test_create_supported_tags_musllinux():
     )
 
 
-def test_create_supported_tags_unsupported_platform():
+def test_create_supported_tags_unsupported_platform() -> None:
     env = MockEnv(version_info=(3, 12, 1))
 
     unsupported_platforms = [
@@ -150,7 +150,7 @@ def test_create_supported_tags_unsupported_platform():
             platforms.create_supported_tags(platform, env)
 
 
-def test_create_supported_tags_malformed_platforms():
+def test_create_supported_tags_malformed_platforms() -> None:
     env = MockEnv(version_info=(3, 12, 1))
 
     malformed_platforms = [
