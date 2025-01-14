@@ -45,6 +45,14 @@ class BundleVenvCommand(BundleCommand):
             " because the old installer always compiles.)",
             flag=True,
         ),
+        option(
+            "platform",
+            None,
+            "Only use wheels compatible with the specified platform. Otherwise the default behavior uses the platform"
+            " of the running system. (<comment>Experimental</comment>)",
+            flag=False,
+            value_required=True,
+        ),
     ]
 
     bundler_name = "venv"
@@ -54,4 +62,5 @@ class BundleVenvCommand(BundleCommand):
         bundler.set_executable(self.option("python"))
         bundler.set_remove(self.option("clear"))
         bundler.set_compile(self.option("compile"))
+        bundler.set_platform(self.option("platform"))
         bundler.set_activated_groups(self.activated_groups)
