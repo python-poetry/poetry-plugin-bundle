@@ -32,8 +32,6 @@ Poetry-managed applications.
 
 ### bundle venv
 
-### bundle venv
-
 The `bundle venv` command bundles the project and its dependencies into a virtual environment.
 
 The following command
