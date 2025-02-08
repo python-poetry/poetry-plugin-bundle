@@ -1,22 +1,24 @@
-[tool.poetry]
+[project]
 name = "poetry-plugin-bundle"
 version = "1.5.0"
 description = "Poetry plugin to bundle projects into various formats"
-authors = ["Sébastien Eustace <sebastien@eustace.io>"]
-license = "MIT"
+authors = [{ name = "Sébastien Eustace", email = "sebastien@eustace.io" }]
+license = { text = "MIT" }
 readme = "README.md"
+requires-python = ">=3.9,<4.0"
+dependencies = ["poetry>=1.5.0,<3.0.0"]
+dynamic = ["classifiers"]
 
+[project.entry-points."poetry.application.plugin"]
+export = "poetry_plugin_bundle.plugin:BundleApplicationPlugin"
+
+[tool.poetry]
 packages = [
     { include = "poetry_plugin_bundle", from = "src" }
 ]
-
 include = [
     { path = "tests", format = "sdist" }
 ]
-
-[tool.poetry.dependencies]
-python = "^3.9"
-poetry = ">=1.5.0,<3.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=2.6"
@@ -38,9 +40,6 @@ mypy = ">=1.1.1"
 optional = true
 [tool.poetry.group.github-actions.dependencies]
 pytest-github-actions-annotate-failures = "^0.1.7"
-
-[tool.poetry.plugins."poetry.application.plugin"]
-export = "poetry_plugin_bundle.plugin:BundleApplicationPlugin"
 
 
 [tool.ruff]
@@ -110,5 +109,5 @@ testpaths = [
 
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0"]
 build-backend = "poetry.core.masonry.api"
