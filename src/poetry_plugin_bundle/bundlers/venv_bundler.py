@@ -69,7 +69,8 @@ class VenvBundler(Bundler):
         from poetry.packages.locker import Locker
         from poetry.utils.env import Env
         from poetry.utils.env import EnvManager
-        from poetry.utils.env import InvalidCurrentPythonVersionError
+        from poetry.utils.env.python import Python
+        from poetry.utils.env.python.exceptions import InvalidCurrentPythonVersionError
 
         class CustomEnvManager(EnvManager):
             """
@@ -95,15 +96,19 @@ class VenvBundler(Bundler):
                 return True
 
             def create_venv_at_path(
-                self, path: Path, executable: Path | None, force: bool
+                self,
+                path: Path,
+                python: Python | None,
+                force: bool,
             ) -> Env:
                 self._path = path
-                return self.create_venv(name=None, executable=executable, force=force)
+                return self.create_venv(name=None, python=python, force=force)
 
         warnings = []
 
         manager = CustomEnvManager(poetry)
         executable = Path(self._executable) if self._executable else None
+        python = Python(executable) if executable else None
 
         message = self._get_message(poetry, self._path)
         if io.is_decorated() and not io.is_debug():
@@ -126,7 +131,7 @@ class VenvBundler(Bundler):
 
         try:
             env = manager.create_venv_at_path(
-                self._path, executable=executable, force=self._remove
+                self._path, python=python, force=self._remove
             )
         except InvalidCurrentPythonVersionError:
             self._write(
@@ -134,9 +139,7 @@ class VenvBundler(Bundler):
                 f"{message}: <info>Replacing existing virtual environment"
                 " due to incompatible Python version</info>",
             )
-            env = manager.create_venv_at_path(
-                self._path, executable=executable, force=True
-            )
+            env = manager.create_venv_at_path(self._path, python=python, force=True)
 
         self._write(io, f"{message}: <info>Installing dependencies</info>")
 
