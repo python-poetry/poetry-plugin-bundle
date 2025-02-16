@@ -55,14 +55,7 @@ class VenvBundler(Bundler):
 
         from cleo.io.null_io import NullIO
         from poetry.core.masonry.builders.wheel import WheelBuilder
-
-        try:
-            from poetry.core.masonry.utils.module import ModuleOrPackageNotFoundError
-        except ImportError:
-            # poetry-core < 2.0
-            from poetry.core.masonry.utils.module import (  # type: ignore[attr-defined, no-redef]
-                ModuleOrPackageNotFound as ModuleOrPackageNotFoundError,
-            )
+        from poetry.core.masonry.utils.module import ModuleOrPackageNotFoundError
         from poetry.core.packages.package import Package
         from poetry.installation.installer import Installer
         from poetry.installation.operations.install import Install
@@ -150,12 +143,7 @@ class VenvBundler(Bundler):
                     package.develop = False
                 return repo
 
-        try:
-            locker_data = poetry.locker._pyproject_data
-        except AttributeError:
-            # poetry < 2.0
-            locker_data = poetry.locker._local_config  # type: ignore[attr-defined]
-        custom_locker = CustomLocker(poetry.locker.lock, locker_data)
+        custom_locker = CustomLocker(poetry.locker.lock, poetry.locker._pyproject_data)
 
         installer = Installer(
             NullIO() if not io.is_debug() else io,
