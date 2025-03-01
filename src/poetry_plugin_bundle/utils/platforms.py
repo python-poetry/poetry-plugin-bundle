@@ -39,7 +39,8 @@ class PlatformTagParseResult:
 
 def create_supported_tags(platform: str, env: Env) -> list[Tag]:
     """
-    Given a platform specifier string, generate a list of compatible tags for the argument environment's interpreter.
+    Given a platform specifier string, generate a list of compatible tags
+    for the argument environment's interpreter.
 
     Refer to:
         https://packaging.python.org/en/latest/specifications/platform-compatibility-tags/#platform-tag

@@ -145,7 +145,7 @@ class VenvBundler(Bundler):
             )
 
         if self._platform:
-            self.constrain_env_platform(env, self._platform)
+            self._constrain_env_platform(env, self._platform)
 
         self._write(io, f"{message}: <info>Installing dependencies</info>")
 
@@ -258,9 +258,10 @@ class VenvBundler(Bundler):
 
         io.overwrite(message)
 
-    def constrain_env_platform(self, env: Env, platform: str) -> None:
+    def _constrain_env_platform(self, env: Env, platform: str) -> None:
         """
-        Set the argument environment's supported tags based on the configured platform override.
+        Set the argument environment's supported tags
+        based on the configured platform override.
         """
         from poetry_plugin_bundle.utils.platforms import create_supported_tags
 
