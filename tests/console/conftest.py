@@ -27,12 +27,7 @@ def poetry(project_directory: str, config: Config) -> Poetry:
     p = Factory().create_poetry(
         Path(__file__).parent.parent / "fixtures" / project_directory
     )
-    try:
-        locker_data = p.locker._pyproject_data
-    except AttributeError:
-        # poetry < 2.0
-        locker_data = p.locker._local_config  # type: ignore[attr-defined]
-    p.set_locker(TestLocker(p.locker.lock, locker_data))
+    p.set_locker(TestLocker(p.locker.lock, p.locker._pyproject_data))
 
     return p
 
