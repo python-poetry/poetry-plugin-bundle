@@ -11,6 +11,7 @@ import pytest
 from cleo.formatters.style import Style
 from cleo.io.buffered_io import BufferedIO
 from poetry.core.packages.package import Package
+from poetry.core.packages.utils.link import Link
 from poetry.factory import Factory
 from poetry.installation.operations.install import Install
 from poetry.puzzle.exceptions import SolverProblemError
@@ -422,3 +423,79 @@ def test_bundler_non_package_mode(
   • Bundled simple-project-non-package-mode (1.2.3) into {path}
 """
     assert expected == io.fetch_output()
+
+
+def test_bundler_platform_override(
+    io: BufferedIO, tmpdir: str, mocker: MockerFixture, config: Config
+) -> None:
+    poetry = Factory().create_poetry(
+        Path(__file__).parent.parent / "fixtures" / "project_with_binary_wheel"
+    )
+    poetry.set_config(config)
+
+    def get_links_fake(package: Package) -> list[Link]:
+        return [Link(f"https://example.com/{file['file']}") for file in package.files]
+
+    mocker.patch(
+        "poetry.installation.chooser.Chooser._get_links", side_effect=get_links_fake
+    )
+    mocker.patch("poetry.installation.executor.Executor._execute_uninstall")
+    mocker.patch("poetry.installation.executor.Executor._execute_update")
+    mock_download_link = mocker.patch(
+        "poetry.installation.executor.Executor._download_link"
+    )
+    mocker.patch("poetry.installation.wheel_installer.WheelInstaller.install")
+
+    def get_installed_links() -> dict[str, str]:
+        return {
+            call[0][0].package.name: call[0][1].filename
+            for call in mock_download_link.call_args_list
+        }
+
+    bundler = VenvBundler()
+    bundler.set_path(Path(tmpdir))
+    bundler.set_remove(True)
+
+    bundler.set_platform("manylinux_2_28_x86_64")
+    bundler.bundle(poetry, io)
+    installed_link_by_package = get_installed_links()
+    assert "manylinux_2_28_x86_64" in installed_link_by_package["cryptography"]
+    assert "manylinux_2_17_x86_64" in installed_link_by_package["cffi"]
+    assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
+
+    bundler.set_platform("manylinux2014_x86_64")
+    bundler.bundle(poetry, io)
+    installed_link_by_package = get_installed_links()
+    assert "manylinux2014_x86_64" in installed_link_by_package["cryptography"]
+    assert "manylinux_2_17_x86_64" in installed_link_by_package["cffi"]
+    assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
+
+    bundler.set_platform("macosx_10_9_x86_64")
+    bundler.bundle(poetry, io)
+    installed_link_by_package = get_installed_links()
+    assert "macosx_10_9_universal2" in installed_link_by_package["cryptography"]
+    expected_cffi_platform = (
+        "macosx_10_9_x86_64" if sys.version_info < (3, 13) else "cffi-1.17.1.tar.gz"
+    )
+    assert expected_cffi_platform in installed_link_by_package["cffi"]
+    assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
+
+    bundler.set_platform("macosx_11_0_arm64")
+    bundler.bundle(poetry, io)
+    installed_link_by_package = get_installed_links()
+    assert "macosx_10_9_universal2" in installed_link_by_package["cryptography"]
+    expected_cffi_platform = (
+        "macosx_11_0_arm64" if sys.version_info >= (3, 9) else "cffi-1.17.1.tar.gz"
+    )
+    assert expected_cffi_platform in installed_link_by_package["cffi"]
+    assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
+
+    bundler.set_platform("musllinux_1_2_aarch64")
+    bundler.bundle(poetry, io)
+    installed_link_by_package = get_installed_links()
+    assert "musllinux_1_2_aarch64" in installed_link_by_package["cryptography"]
+    expected_cffi_platform = (
+        "musllinux_1_1_aarch64" if sys.version_info >= (3, 9) else "cffi-1.17.1.tar.gz"
+    )
+    assert expected_cffi_platform in installed_link_by_package["cffi"]
+    assert "py3-none-any.whl" in installed_link_by_package["pycparser"]

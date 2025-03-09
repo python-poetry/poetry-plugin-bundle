@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from cleo.io.outputs.section_output import SectionOutput
     from poetry.poetry import Poetry
     from poetry.repositories.lockfile_repository import LockfileRepository
+    from poetry.utils.env import Env
 
 
 class VenvBundler(Bundler):
@@ -23,6 +24,7 @@ class VenvBundler(Bundler):
         self._remove: bool = False
         self._activated_groups: set[str] | None = None
         self._compile: bool = False
+        self._platform: str | None = None
 
     def set_path(self, path: Path) -> VenvBundler:
         self._path = path
@@ -49,6 +51,11 @@ class VenvBundler(Bundler):
 
         return self
 
+    def set_platform(self, platform: str | None) -> VenvBundler:
+        self._platform = platform
+
+        return self
+
     def bundle(self, poetry: Poetry, io: IO) -> bool:
         from pathlib import Path
         from tempfile import TemporaryDirectory
@@ -60,7 +67,6 @@ class VenvBundler(Bundler):
         from poetry.installation.installer import Installer
         from poetry.installation.operations.install import Install
         from poetry.packages.locker import Locker
-        from poetry.utils.env import Env
         from poetry.utils.env import EnvManager
         from poetry.utils.env.python import Python
         from poetry.utils.env.python.exceptions import InvalidCurrentPythonVersionError
@@ -133,6 +139,9 @@ class VenvBundler(Bundler):
                 " due to incompatible Python version</info>",
             )
             env = manager.create_venv_at_path(self._path, python=python, force=True)
+
+        if self._platform:
+            self._constrain_env_platform(env, self._platform)
 
         self._write(io, f"{message}: <info>Installing dependencies</info>")
 
@@ -239,3 +248,12 @@ class VenvBundler(Bundler):
             return
 
         io.overwrite(message)
+
+    def _constrain_env_platform(self, env: Env, platform: str) -> None:
+        """
+        Set the argument environment's supported tags
+        based on the configured platform override.
+        """
+        from poetry_plugin_bundle.utils.platforms import create_supported_tags
+
+        env._supported_tags = create_supported_tags(platform, env)
