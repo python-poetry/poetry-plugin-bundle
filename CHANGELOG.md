@@ -1,7 +1,14 @@
 # Change Log
 
 
-## [1.6.0] - 2024-02-16
+## [1.7.0] - 2025-03-10
+
+### Added
+
+- Add experimental `--platform` option to facilitate installing wheels for platforms other than the host system ([#123](https://github.com/python-poetry/poetry-plugin-bundle/pull/123)).
+
+
+## [1.6.0] - 2025-02-16
 
 ### Added
 
@@ -12,7 +19,7 @@
 - Drop support for older Poetry versions ([#137](https://github.com/python-poetry/poetry-plugin-bundle/pull/137)).
 
 
-## [1.5.0] - 2024-01-05
+## [1.5.0] - 2025-01-05
 
 ### Added
 
@@ -74,7 +81,8 @@
 Initial version.
 
 
-[Unreleased]: https://github.com/python-poetry/poetry-plugin-bundle/compare/1.6.0...main
+[Unreleased]: https://github.com/python-poetry/poetry-plugin-bundle/compare/1.7.0...main
+[1.7.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.7.0
 [1.6.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.6.0
 [1.5.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.5.0
 [1.4.1]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.4.1
