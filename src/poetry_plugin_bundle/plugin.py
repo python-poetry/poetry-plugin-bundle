@@ -36,7 +36,7 @@ class BundleApplicationPlugin(ApplicationPlugin):
             BundleCommand,
         )
 
-        command: BundleCommand = cast(BundleCommand, event.command)
+        command: BundleCommand = cast("BundleCommand", event.command)
         if not isinstance(command, BundleCommand):
             return
 
