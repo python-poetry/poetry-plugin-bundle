@@ -3,7 +3,7 @@ name = "poetry-plugin-bundle"
 version = "1.7.0"
 description = "Poetry plugin to bundle projects into various formats"
 authors = [{ name = "Sébastien Eustace", email = "sebastien@eustace.io" }]
-license = { text = "MIT" }
+license = "MIT"
 readme = "README.md"
 requires-python = ">=3.9,<4.0"
 dependencies = ["poetry>=2.1.0,<3.0.0"]

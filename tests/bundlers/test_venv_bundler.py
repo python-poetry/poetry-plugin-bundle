@@ -10,6 +10,7 @@ import pytest
 
 from cleo.formatters.style import Style
 from cleo.io.buffered_io import BufferedIO
+from poetry.core.packages.dependency_group import MAIN_GROUP
 from poetry.core.packages.package import Package
 from poetry.core.packages.utils.link import Link
 from poetry.factory import Factory
@@ -267,7 +268,7 @@ def test_bundler_can_filter_dependency_groups(
     with pytest.raises(SolverProblemError):
         assert not bundler.bundle(poetry, io)
 
-    bundler.set_activated_groups({"main"})
+    bundler.set_activated_groups({MAIN_GROUP})
     io.clear_output()
 
     # This succeeds because the dev dependency group is filtered out
