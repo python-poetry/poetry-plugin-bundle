@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
     from cleo.io.io import IO
     from cleo.io.outputs.section_output import SectionOutput
+    from packaging.utils import NormalizedName
     from poetry.poetry import Poetry
     from poetry.repositories.lockfile_repository import LockfileRepository
     from poetry.utils.env import Env
@@ -22,7 +23,7 @@ class VenvBundler(Bundler):
         self._path: Path
         self._executable: str | None = None
         self._remove: bool = False
-        self._activated_groups: set[str] | None = None
+        self._activated_groups: set[NormalizedName] | None = None
         self._compile: bool = False
         self._platform: str | None = None
 
@@ -36,7 +37,9 @@ class VenvBundler(Bundler):
 
         return self
 
-    def set_activated_groups(self, activated_groups: set[str]) -> VenvBundler:
+    def set_activated_groups(
+        self, activated_groups: set[NormalizedName]
+    ) -> VenvBundler:
         self._activated_groups = activated_groups
 
         return self
