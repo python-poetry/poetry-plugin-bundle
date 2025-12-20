@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from poetry_plugin_bundle.bundlers.bundler import Bundler
@@ -23,7 +25,7 @@ def test_bundler_raises_an_error_for_incorrect_bundler_classes() -> None:
     manager = BundlerManager()
 
     with pytest.raises(
-        BundlerManagerError, match='The bundler class "mock" does not exist.'
+        BundlerManagerError, match=re.escape('The bundler class "mock" does not exist.')
     ):
         manager.bundler("mock")
 
@@ -43,6 +45,6 @@ def test_register_bundler_class_cannot_register_existing_bundler_classes() -> No
 
     with pytest.raises(
         BundlerManagerError,
-        match='A bundler class with the name "mock" already exists.',
+        match=re.escape('A bundler class with the name "mock" already exists.'),
     ):
         manager.register_bundler_class(MockBundler)
