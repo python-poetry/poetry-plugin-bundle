@@ -3,7 +3,6 @@ from __future__ import annotations
 import shutil
 
 from typing import TYPE_CHECKING
-from typing import Iterator
 
 import pytest
 
@@ -14,6 +13,7 @@ from poetry.utils.env import VirtualEnv
 
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from pathlib import Path
 
     from pytest_mock import MockerFixture
