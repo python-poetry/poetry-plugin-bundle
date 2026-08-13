@@ -6,11 +6,13 @@ from poetry_plugin_bundle.bundlers.bundler import Bundler
 
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from pathlib import Path
 
     from cleo.io.io import IO
     from cleo.io.outputs.section_output import SectionOutput
     from packaging.utils import NormalizedName
+    from poetry.packages.transitive_package_info import TransitivePackageInfo
     from poetry.poetry import Poetry
     from poetry.repositories.lockfile_repository import LockfileRepository
     from poetry.utils.env import Env
@@ -149,11 +151,23 @@ class VenvBundler(Bundler):
         self._write(io, f"{message}: <info>Installing dependencies</info>")
 
         class CustomLocker(Locker):
+            @staticmethod
+            def _disable_develop(packages: Iterable[Package]) -> None:
+                for package in packages:
+                    package.develop = False
+
             def locked_repository(self) -> LockfileRepository:
                 repo = super().locked_repository()
-                for package in repo.packages:
-                    package.develop = False
+                self._disable_develop(repo.packages)
                 return repo
+
+            def locked_packages(self) -> dict[Package, TransitivePackageInfo]:
+                # Poetry >= 2.3.0 defaults installer.re-resolve to false, and on
+                # that path the installer takes its install targets from
+                # locked_packages() rather than locked_repository().
+                packages = super().locked_packages()
+                self._disable_develop(packages)
+                return packages
 
         custom_locker = CustomLocker(poetry.locker.lock, poetry.locker._pyproject_data)
 
