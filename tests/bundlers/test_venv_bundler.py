@@ -320,13 +320,20 @@ def test_bundler_passes_compile_flag(
     assert expected == io.fetch_output()
 
 
+@pytest.mark.parametrize("re_resolve", [True, False])
 def test_bundler_editable_deps(
-    io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture, config: Config
+    io: BufferedIO,
+    tmpdir: str,
+    poetry: Poetry,
+    mocker: MockerFixture,
+    config: Config,
+    re_resolve: bool,
 ) -> None:
     poetry = Factory().create_poetry(
         Path(__file__).parent.parent / "fixtures" / "simple_project_with_editable_dep"
     )
     poetry.set_config(config)
+    config.config["installer"]["re-resolve"] = re_resolve
 
     install_spy = mocker.spy(Install, "__init__")
     mocker.patch("poetry.installation.executor.Executor._execute_operation")
