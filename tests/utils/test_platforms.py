@@ -4,7 +4,7 @@ import pytest
 
 from poetry.utils.env import MockEnv
 
-import poetry_plugin_bundle.utils.platforms as platforms
+from poetry_plugin_bundle.utils import platforms
 
 
 def _get_supported_tags_set(
