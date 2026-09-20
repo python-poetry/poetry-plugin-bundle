@@ -9,6 +9,10 @@ requires-python = ">=3.10,<4.0"
 dependencies = ["poetry>=2.1.0,<3.0.0"]
 dynamic = ["classifiers"]
 
+[project.urls]
+homepage = "https://python-poetry.org/"
+repository = "https://github.com/python-poetry/poetry-plugin-bundle"
+
 [project.entry-points."poetry.application.plugin"]
 export = "poetry_plugin_bundle.plugin:BundleApplicationPlugin"
 
