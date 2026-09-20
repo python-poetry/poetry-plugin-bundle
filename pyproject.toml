@@ -1,6 +1,6 @@
 [project]
 name = "poetry-plugin-bundle"
-version = "1.7.0"
+version = "1.8.0"
 description = "Poetry plugin to bundle projects into various formats"
 authors = [{ name = "Sébastien Eustace", email = "sebastien@eustace.io" }]
 license = "MIT"

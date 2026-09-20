@@ -1,6 +1,17 @@
 # Change Log
 
 
+## [1.8.0] - 2026-09-20
+
+### Changed
+
+- Drop support for Python 3.9 ([#158](https://github.com/python-poetry/poetry-plugin-bundle/pull/158)).
+
+### Fixed
+
+- Fix an issue where path dependencies with `develop = true` were installed as editable installs with Poetry >= 2.3.0 ([#163](https://github.com/python-poetry/poetry-plugin-bundle/pull/163)).
+
+
 ## [1.7.0] - 2025-03-10
 
 ### Added
@@ -81,7 +92,8 @@
 Initial version.
 
 
-[Unreleased]: https://github.com/python-poetry/poetry-plugin-bundle/compare/1.7.0...main
+[Unreleased]: https://github.com/python-poetry/poetry-plugin-bundle/compare/1.8.0...main
+[1.8.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.8.0
 [1.7.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.7.0
 [1.6.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.6.0
 [1.5.0]: https://github.com/python-poetry/poetry-plugin-bundle/releases/tag/1.5.0
