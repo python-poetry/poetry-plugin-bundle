@@ -441,11 +441,18 @@ def test_bundler_platform_override(
     )
     poetry.set_config(config)
 
-    def get_links_fake(package: Package) -> list[Link]:
-        return [Link(f"https://example.com/{file['file']}") for file in package.files]
+    def find_links_for_package_fake(package: Package) -> list[Link]:
+        return [
+            Link(
+                f"https://example.com/{file['file']}"
+                f"#{file['hash'].replace(':', '=', 1)}"
+            )
+            for file in package.files
+        ]
 
     mocker.patch(
-        "poetry.installation.chooser.Chooser._get_links", side_effect=get_links_fake
+        "poetry.repositories.pypi_repository.PyPiRepository.find_links_for_package",
+        side_effect=find_links_for_package_fake,
     )
     mocker.patch("poetry.installation.executor.Executor._execute_uninstall")
     mocker.patch("poetry.installation.executor.Executor._execute_update")
