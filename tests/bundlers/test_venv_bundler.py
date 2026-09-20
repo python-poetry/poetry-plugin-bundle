@@ -489,7 +489,7 @@ def test_bundler_platform_override(
     bundler.bundle(poetry, io)
     installed_link_by_package = get_installed_links()
     assert "macosx_10_9_universal2" in installed_link_by_package["cryptography"]
-    assert "cffi-2.0.0.tar.gz" in installed_link_by_package["cffi"]
+    assert "cffi-2.1.1.tar.gz" in installed_link_by_package["cffi"]
     assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
 
     bundler.set_platform("macosx_11_0_arm64")
