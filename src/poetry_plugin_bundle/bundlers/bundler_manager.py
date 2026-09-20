@@ -11,12 +11,14 @@ if TYPE_CHECKING:
 
 class BundlerManager:
     def __init__(self) -> None:
+        from poetry_plugin_bundle.bundlers.archive_bundler import ArchiveBundler
         from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
         self._bundler_classes: dict[str, type[Bundler]] = {}
 
         # Register default bundlers
         self.register_bundler_class(VenvBundler)
+        self.register_bundler_class(ArchiveBundler)
 
     def bundler(self, name: str) -> Bundler:
         if name.lower() not in self._bundler_classes:
