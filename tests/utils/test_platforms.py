@@ -54,10 +54,12 @@ def test_create_supported_tags_legacy_manylinux_aliases() -> None:
         python_version_info=(3, 10, 2),
         expected_tags={
             "cp310-cp310-manylinux_2_5_x86_64",
+            "cp310-cp310-manylinux1_x86_64",
             "cp310-cp310-manylinux_2_1_x86_64",
         },
         unexpected_tags={
             "cp310-cp310-manylinux_2_6_x86_64",
+            "cp310-cp310-manylinux2010_x86_64",
         },
     )
 
@@ -66,10 +68,13 @@ def test_create_supported_tags_legacy_manylinux_aliases() -> None:
         python_version_info=(3, 10, 2),
         expected_tags={
             "cp310-cp310-manylinux_2_12_x86_64",
+            "cp310-cp310-manylinux2010_x86_64",
+            "cp310-cp310-manylinux1_x86_64",
             "cp310-cp310-manylinux_2_1_x86_64",
         },
         unexpected_tags={
             "cp310-cp310-manylinux_2_13_x86_64",
+            "cp310-cp310-manylinux2014_x86_64",
         },
     )
 
@@ -78,12 +83,44 @@ def test_create_supported_tags_legacy_manylinux_aliases() -> None:
         python_version_info=(3, 11, 9),
         expected_tags={
             "cp311-cp311-manylinux_2_17_x86_64",
+            "cp311-cp311-manylinux2014_x86_64",
+            "cp311-cp311-manylinux2010_x86_64",
+            "cp311-cp311-manylinux1_x86_64",
             "cp311-cp311-manylinux_2_1_x86_64",
         },
         unexpected_tags={
             "cp311-cp311-manylinux_2_24_x86_64",
         },
     )
+
+
+def test_create_supported_tags_manylinux_includes_legacy_aliases() -> None:
+    _test_create_supported_tags(
+        platform="manylinux_2_34_aarch64",
+        python_version_info=(3, 14, 0),
+        expected_tags={
+            "cp314-cp314-manylinux_2_34_aarch64",
+            "cp314-cp314-manylinux_2_17_aarch64",
+            "cp314-cp314-manylinux2014_aarch64",
+            "cp314-abi3-manylinux2014_aarch64",
+            "py3-none-manylinux2014_aarch64",
+        },
+        unexpected_tags={
+            "cp314-cp314-manylinux_2_35_aarch64",
+        },
+    )
+
+
+def test_create_supported_tags_ranks_legacy_alias_with_its_glibc_version() -> None:
+    env = MockEnv(version_info=(3, 14, 0))
+    tags = [
+        str(tag)
+        for tag in platforms.create_supported_tags("manylinux_2_34_aarch64", env)
+    ]
+
+    index = tags.index("cp314-cp314-manylinux2014_aarch64")
+    assert tags[index - 1] == "cp314-cp314-manylinux_2_17_aarch64"
+    assert tags[index + 1] == "cp314-cp314-manylinux_2_16_aarch64"
 
 
 def test_create_supported_tags_macosx() -> None:
