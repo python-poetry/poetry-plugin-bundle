@@ -26,6 +26,8 @@ from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from poetry.config.config import Config
     from poetry.poetry import Poetry
     from pytest_mock import MockerFixture
@@ -433,13 +435,12 @@ def test_bundler_non_package_mode(
     assert expected == io.fetch_output()
 
 
-def test_bundler_platform_override(
-    io: BufferedIO, tmpdir: str, mocker: MockerFixture, config: Config
-) -> None:
-    poetry = Factory().create_poetry(
-        Path(__file__).parent.parent / "fixtures" / "project_with_binary_wheel"
-    )
-    poetry.set_config(config)
+def _mock_platform_installs(mocker: MockerFixture) -> Callable[[], dict[str, str]]:
+    """
+    Mock the installer's downloads and installs, serving each locked package's
+    files as its links. Returns a function mapping each package name to the
+    filename of the link most recently chosen for it.
+    """
 
     def find_links_for_package_fake(package: Package) -> list[Link]:
         return [
@@ -466,6 +467,18 @@ def test_bundler_platform_override(
             call[0][0].package.name: call[0][1].filename
             for call in mock_download_link.call_args_list
         }
+
+    return get_installed_links
+
+
+def test_bundler_platform_override(
+    io: BufferedIO, tmpdir: str, mocker: MockerFixture, config: Config
+) -> None:
+    poetry = Factory().create_poetry(
+        Path(__file__).parent.parent / "fixtures" / "project_with_binary_wheel"
+    )
+    poetry.set_config(config)
+    get_installed_links = _mock_platform_installs(mocker)
 
     bundler = VenvBundler()
     bundler.set_path(Path(tmpdir))
@@ -505,3 +518,42 @@ def test_bundler_platform_override(
     assert "musllinux_1_2_aarch64" in installed_link_by_package["cryptography"]
     assert "musllinux_1_2_aarch64" in installed_link_by_package["cffi"]
     assert "py3-none-any.whl" in installed_link_by_package["pycparser"]
+
+
+def test_bundler_platform_override_selects_legacy_manylinux_wheel(
+    io: BufferedIO, tmpdir: str, mocker: MockerFixture, config: Config
+) -> None:
+    # cmake 3.18.4.post1 tags its Linux wheels only with legacy manylinux aliases,
+    # alongside an sdist that would otherwise be chosen and built on the host.
+    poetry = Factory().create_poetry(
+        Path(__file__).parent.parent
+        / "fixtures"
+        / "project_with_legacy_manylinux_wheel"
+    )
+    poetry.set_config(config)
+    get_installed_links = _mock_platform_installs(mocker)
+
+    bundler = VenvBundler()
+    bundler.set_path(Path(tmpdir))
+    bundler.set_remove(True)
+
+    bundler.set_platform("manylinux_2_34_aarch64")
+    bundler.bundle(poetry, io)
+    assert (
+        get_installed_links()["cmake"]
+        == "cmake-3.18.4.post1-py3-none-manylinux2014_aarch64.whl"
+    )
+
+    bundler.set_platform("manylinux2014_aarch64")
+    bundler.bundle(poetry, io)
+    assert (
+        get_installed_links()["cmake"]
+        == "cmake-3.18.4.post1-py3-none-manylinux2014_aarch64.whl"
+    )
+
+    bundler.set_platform("manylinux_2_28_x86_64")
+    bundler.bundle(poetry, io)
+    assert (
+        get_installed_links()["cmake"]
+        == "cmake-3.18.4.post1-py3-none-manylinux1_x86_64.whl"
+    )
