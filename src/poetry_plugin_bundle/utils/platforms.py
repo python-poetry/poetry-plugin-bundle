@@ -97,22 +97,34 @@ def create_supported_manylinux_platforms(platform: str) -> list[str]:
 
     For now, only GLIBCMAJOR "2" is supported.  It is unclear if there will be a need to support a future major
     version like "3" and if specified, how generate the compatible 2.x version tags.
+
+    The legacy aliases (manylinux1, manylinux2010, manylinux2014) are included as well, since wheels may be
+    tagged with only the alias.  See https://peps.python.org/pep-0600/#legacy-manylinux-tags
     """
     # Implementation based on https://peps.python.org/pep-0600/#package-installers
 
     tag = normalize_legacy_manylinux_alias(platform)
 
     parsed = PlatformTagParseResult.parse(tag)
-    return [
-        f"{parsed.platform}_{parsed.version_major}_{tag_minor}_{parsed.arch}"
-        for tag_minor in range(parsed.version_minor, -1, -1)
-    ]
+    platforms: list[str] = []
+    for tag_minor in range(parsed.version_minor, -1, -1):
+        glibc_tag = f"{parsed.platform}_{parsed.version_major}_{tag_minor}"
+        platforms.append(f"{glibc_tag}_{parsed.arch}")
+        # A legacy alias ranks just below the tag for the same glibc version.
+        legacy_alias = LEGACY_MANYLINUX_ALIASES_BY_GLIBC_TAG.get(glibc_tag)
+        if legacy_alias:
+            platforms.append(f"{legacy_alias}_{parsed.arch}")
+    return platforms
 
 
 LEGACY_MANYLINUX_ALIASES = {
     "manylinux1": "manylinux_2_5",
     "manylinux2010": "manylinux_2_12",
     "manylinux2014": "manylinux_2_17",
+}
+
+LEGACY_MANYLINUX_ALIASES_BY_GLIBC_TAG = {
+    glibc_tag: alias for alias, glibc_tag in LEGACY_MANYLINUX_ALIASES.items()
 }
 
 
