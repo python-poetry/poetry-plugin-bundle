@@ -92,6 +92,13 @@ This is not a comprehensive list, but illustrates typical examples.
 
 `macosx_10_9_x86_64`, `macosx_10_9_intel`, `macosx_11_1_universal2`, `macosx_11_0_arm64`
 
+#### Compatible wheels
+The specified platform is treated as the newest one the target system supports, so wheels built for older versions of
+it are selected as well.  For example, `manylinux_2_34_aarch64` also accepts wheels built for any older glibc version,
+including wheels tagged only with one of the legacy aliases `manylinux2014`, `manylinux2010` or `manylinux1` (see
+[PEP 600](https://peps.python.org/pep-0600/#legacy-manylinux-tags)).  Among otherwise equivalent wheels, the one built
+for the newest platform version is preferred.
+
 #### Example use case for AWS Lambda
 As an example of one motivating use case for this option, consider the AWS Lambda "serverless" execution environment.
 Depending upon which Python version you configure for your runtime, you may get different versions of the Linux system
