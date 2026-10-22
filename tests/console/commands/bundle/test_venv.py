@@ -9,6 +9,8 @@ from poetry_plugin_bundle.bundlers.venv_bundler import VenvBundler
 
 
 if TYPE_CHECKING:
+    import pytest
+
     from cleo.testers.application_tester import ApplicationTester
     from pytest_mock import MockerFixture
 
@@ -80,4 +82,25 @@ def test_venv_calls_venv_bundler(
         mocker.call(mocker.ANY, False),
         mocker.call(mocker.ANY, False),
         mocker.call(mocker.ANY, True),
+    ]
+
+
+def test_venv_resolves_relative_path(
+    app_tester: ApplicationTester,
+    mocker: MockerFixture,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    mocker.patch(
+        "poetry_plugin_bundle.bundlers.venv_bundler.VenvBundler.bundle",
+        return_value=True,
+    )
+    set_path = mocker.spy(VenvBundler, "set_path")
+    monkeypatch.chdir(tmp_path)
+
+    app_tester.application.catch_exceptions(False)
+    assert app_tester.execute("bundle venv ../bundle") == 0
+
+    assert set_path.call_args_list == [
+        mocker.call(mocker.ANY, (tmp_path.parent / "bundle").resolve())
     ]
