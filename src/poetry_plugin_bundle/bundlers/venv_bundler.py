@@ -220,12 +220,22 @@ class VenvBundler(Bundler):
                         source_type="file",
                         source_url=str(wheel),
                     )
-                    installer.executor.execute([Install(package)])
+                    return_code = installer.executor.execute([Install(package)])
                 except ModuleOrPackageNotFoundError:
                     warnings.append(
                         "The root package was not installed because no matching module or"
                         " package was found."
                     )
+                else:
+                    if return_code:
+                        self._write(
+                            io,
+                            self._get_message(poetry, self._path, error=True)
+                            + ": <error>Failed</> at step <b>Installing"
+                            f" {poetry.package.pretty_name}"
+                            f" ({poetry.package.pretty_version})</b>",
+                        )
+                        return False
 
         self._write(io, self._get_message(poetry, self._path, done=True))
 
