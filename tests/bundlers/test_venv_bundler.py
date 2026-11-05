@@ -207,6 +207,34 @@ def test_bundler_should_fail_when_installation_fails(
     assert expected == io.fetch_output()
 
 
+def test_bundler_should_fail_when_root_package_installation_fails(
+    io: BufferedIO, tmpdir: str, poetry: Poetry, mocker: MockerFixture
+) -> None:
+    def execute_operation(operation: Install) -> int:
+        if operation.package.name == "simple-project":
+            raise RuntimeError
+        return 0
+
+    mocker.patch(
+        "poetry.installation.executor.Executor._do_execute_operation",
+        side_effect=execute_operation,
+    )
+
+    bundler = VenvBundler()
+    bundler.set_path(Path(tmpdir))
+
+    assert not bundler.bundle(poetry, io)
+
+    expected = f"""\
+  • Bundling simple-project (1.2.3) into {tmpdir}
+  • Bundling simple-project (1.2.3) into {tmpdir}: Creating a virtual environment using Poetry-determined Python
+  • Bundling simple-project (1.2.3) into {tmpdir}: Installing dependencies
+  • Bundling simple-project (1.2.3) into {tmpdir}: Installing simple-project (1.2.3)
+  • Bundling simple-project (1.2.3) into {tmpdir}: Failed at step Installing simple-project (1.2.3)
+"""
+    assert expected == io.fetch_output()
+
+
 def test_bundler_should_display_a_warning_for_projects_with_no_module(
     io: BufferedIO, tmp_venv: VirtualEnv, mocker: MockerFixture, config: Config
 ) -> None:
