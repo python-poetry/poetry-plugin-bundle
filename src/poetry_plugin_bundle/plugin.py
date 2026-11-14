@@ -7,6 +7,7 @@ from typing import cast
 from cleo.events.console_events import COMMAND
 from poetry.plugins.application_plugin import ApplicationPlugin
 
+from poetry_plugin_bundle.console.commands.bundle.archive import BundleArchiveCommand
 from poetry_plugin_bundle.console.commands.bundle.venv import BundleVenvCommand
 
 
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
 class BundleApplicationPlugin(ApplicationPlugin):
     @property
     def commands(self) -> list[type[Command]]:
-        return [BundleVenvCommand]
+        return [BundleVenvCommand, BundleArchiveCommand]
 
     def activate(self, application: Application) -> None:
         assert application.event_dispatcher
