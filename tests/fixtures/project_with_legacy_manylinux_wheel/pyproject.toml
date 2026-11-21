@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "project-with-legacy-manylinux-wheel"
+version = "0.1.0"
+description = ""
+authors = ["BrandonLWhite <brandonlwhite@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+cmake = "==3.18.4.post1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
