@@ -61,7 +61,8 @@ class BundleVenvCommand(BundleCommand):
     bundler_name = "venv"
 
     def configure_bundler(self, bundler: VenvBundler) -> None:  # type: ignore[override]
-        bundler.set_path(Path(self.argument("path")))
+        # resolve now, so entrypoint shebangs do not depend on the current directory
+        bundler.set_path(Path(self.argument("path")).resolve())
         bundler.set_executable(self.option("python"))
         bundler.set_remove(self.option("clear"))
         bundler.set_compile(self.option("compile"))
